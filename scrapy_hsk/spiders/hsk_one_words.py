@@ -1,5 +1,7 @@
 import scrapy
 
+from scrapy_hsk.items import WordItem
+
 
 class HskOneWordsSpider(scrapy.Spider):
     name = "hsk_one_words"
@@ -8,8 +10,10 @@ class HskOneWordsSpider(scrapy.Spider):
 
     def parse(self, response):
         for word in response.css('tbody tr'):
-            yield {
-                'hanzi': word.css('tr td.column-1::text').get(),
-                'pinyin': word.css('tr td.column-2::text').get(),
-                'russian': word.css('tr td.column-3::text').get()
+            data = {
+                'word': word.css('tr td.column-1::text').get(),
+                'transcription': word.css('tr td.column-2::text').get(),
+                'rus_translation': word.css('tr td.column-3::text').get(),
+                'level': 1
             }
+            yield WordItem(data)

@@ -1,12 +1,9 @@
-# Define here the models for your scraped items
-#
-# See documentation in:
-# https://docs.scrapy.org/en/latest/topics/items.html
-
 import scrapy
 
 
-class ScrapyHskItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class WordItem(scrapy.Item):
+    """"""
+    word = scrapy.Field()
+    transcription = scrapy.Field()
+    rus_translation = scrapy.Field()
+    level = scrapy.Field()

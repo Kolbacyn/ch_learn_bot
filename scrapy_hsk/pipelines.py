@@ -1,13 +1,25 @@
-# Define your item pipelines here
-#
-# Don't forget to add your pipeline to the ITEM_PIPELINES setting
-# See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
+
+from scrapy_hsk.models import Base, Word
 
 
-# useful for handling different item types with a single interface
-from itemadapter import ItemAdapter
+class WordToDBPipeline:
+    def open_spider(self, spider):
+        engine = create_engine('sqlite:///sqlite.db')
+        Base.metadata.create_all(engine)
+        self.session = Session(engine)
 
-
-class ScrapyHskPipeline:
     def process_item(self, item, spider):
+        word = Word(
+            word=item['word'],
+            transcription=item['transcription'],
+            rus_translation=item['rus_translation'],
+            level=item['level']
+        )
+        self.session.add(word)
+        self.session.commit()
         return item
+
+    def close_spider(self, spider):
+        self.session.close()
