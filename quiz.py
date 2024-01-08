@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from random import random
+from random import choice, shuffle
 from typing import Any
 
 from aiogram import F, html, Router
@@ -15,8 +15,14 @@ from aiogram.utils.formatting import (
     as_section
 )
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 
-from scrapy_hsk.models import Word
+from scrapy_hsk.models import Base, Word
+
+engine = create_engine('sqlite:///sqlite.db', echo=False)
+Base.metadata.create_all(engine)
+session = Session(engine)
 
 
 @dataclass
@@ -37,57 +43,33 @@ class Question:
         self.correct_answer = next(answer.text for answer in self.answers
                                    if answer.is_correct)
 
-    def generate_question():
-        pass
+
+def get_word_from_database():
+    word = choice(session.query(Word).all())
+    return word
 
 
-QUESTIONS = [
-    Question(
-        text="What is the capital of France?",
+def generate_question():
+    words = [get_word_from_database() for i in range(4)]
+    hanzi = words[0].word
+    text = f'translate into Russian: {hanzi}'
+    translation = words[0].rus_translation
+    ans_one = words[1]
+    ans_two = words[2]
+    ans_three = words[3]
+    question = Question(
+        text=text,
         answers=[
-            Answer("Paris", is_correct=True),
-            Answer("London"),
-            Answer("Berlin"),
-            Answer("Madrid"),
-        ],
-    ),
-    Question(
-        text="What is the capital of Spain?",
-        answers=[
-            Answer("Paris"),
-            Answer("London"),
-            Answer("Berlin"),
-            Answer("Madrid", is_correct=True),
-        ],
-    ),
-    Question(
-        text="What is the capital of Germany?",
-        answers=[
-            Answer("Paris"),
-            Answer("London"),
-            Answer("Berlin", is_correct=True),
-            Answer("Madrid"),
-        ],
-    ),
-    Question(
-        text="What is the capital of England?",
-        answers=[
-            Answer("Paris"),
-            Answer("London", is_correct=True),
-            Answer("Berlin"),
-            Answer("Madrid"),
-        ],
-    ),
-    Question(
-        text="What is the capital of Italy?",
-        answers=[
-            Answer("Paris"),
-            Answer("London"),
-            Answer("Berlin"),
-            Answer("Rome", is_correct=True),
-        ],
-    ),
-]
+            Answer(translation, is_correct=True),
+            Answer(ans_one.rus_translation),
+            Answer(ans_two.rus_translation),
+            Answer(ans_three.rus_translation),
+        ]
+    )
+    return question
+
+
+QUESTIONS = [generate_question() for i in range(20)]
 
 
 class QuizScene(Scene, state='quiz'):

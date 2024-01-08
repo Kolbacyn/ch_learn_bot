@@ -6,7 +6,7 @@ from scrapy_hsk.models import Base, Word
 
 class WordToDBPipeline:
     def open_spider(self, spider):
-        engine = create_engine('sqlite:///sqlite.db')
+        engine = create_engine('sqlite:///sqlite.db', echo=False)
         Base.metadata.create_all(engine)
         self.session = Session(engine)
 
