@@ -35,7 +35,7 @@ def create_dispatcher():
         events_isolation=SimpleEventIsolation()
     )
     dispatcher.include_router(flash_router)
-    dispatcher.include_router(handlers.router)
+    # dispatcher.include_router(handlers.router)
     return dispatcher
 
 
@@ -67,17 +67,26 @@ async def cmd_start(message: types.Message):
     picture = types.FSInputFile('hey_pic.png')
     await message.answer_photo(picture)
     await message.answer(
-        f'你好 <b>{message.from_user.full_name}</b>!',
-        parse_mode=ParseMode.HTML
+        f'你好 <b>{message.from_user.full_name}</b>!'
         )
     time.sleep(1)
     await message.answer(
-        'Меня зовут Ханью и я твой помощник в изучении китайского'
+        'Меня зовут Ханью и я твой помощник в изучении китайского языка'
         )
     time.sleep(1)
     await message.answer(
         'Выбери уровень подготовки',
         reply_markup=hsk_buttons
+        )
+
+
+@dp.message(Command('help'))
+async def cmd_help(message: types.Message):
+    await message.answer(
+        'Это бот-помощник в изучении китайского языка.'
+        )
+    await message.answer(
+        'Для начала тренировки отправьте /start и выберите уровень подготовки.'
         )
 
 
