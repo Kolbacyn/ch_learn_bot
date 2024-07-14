@@ -1,38 +1,65 @@
 import asyncio
 import logging
 import time
+from dataclasses import dataclass, field
 from os import getenv
+from random import choice
 
 from aiogram import Bot, Dispatcher, F, types, Router
 from aiogram.enums import ParseMode
-from aiogram.fsm.scene import SceneRegistry, ScenesManager
+from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.memory import SimpleEventIsolation
 from aiogram.filters.command import Command
+from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 from dotenv import load_dotenv
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 
-from callbacks import get_hsk_callback
+from scrapy_hsk.models import Base, Word
+
+import handlers
 from keyboards import main_menu, hsk_buttons
-from quiz import QuizScene
+
 
 logging.basicConfig(level=logging.INFO)
 
-quiz_router = Router(name=__name__)
-# Add handler that initializes the scene
-quiz_router.message.register(QuizScene.as_handler(), Command("quiz"))
+flash_router = Router(name=__name__)
+
+engine = create_engine('sqlite:///sqlite.db', echo=False)
+Base.metadata.create_all(engine)
+session = Session(engine)
 
 
 def create_dispatcher():
     dispatcher = Dispatcher(
         events_isolation=SimpleEventIsolation()
     )
-    dispatcher.include_router(quiz_router)
-    scene_registry = SceneRegistry(dispatcher)
-    scene_registry.add(QuizScene)
+    dispatcher.include_router(flash_router)
+    dispatcher.include_router(handlers.router)
     return dispatcher
 
 
 load_dotenv()
 dp = create_dispatcher()
+
+
+@dataclass
+class Answer:
+    """"""
+    text: str
+    is_correct: bool = False
+
+
+@dataclass
+class Question:
+    """"""
+    text: str
+    answers: list[Answer]
+    correct_answer: str = field(init=False)
+
+    def __post_init__(self):
+        self.correct_answer = next(answer.text for answer in self.answers
+                                   if answer.is_correct)
 
 
 @dp.message(Command('start'))
@@ -54,16 +81,61 @@ async def cmd_start(message: types.Message):
         )
 
 
+def get_word_from_database():
+    word = choice(session.query(Word).all())
+    return word
+
+
+def generate_question():
+    words = [get_word_from_database() for i in range(4)]
+    hanzi = words[0].word
+    text = f'Переведите на русский язык: {hanzi}'
+    translation = words[0].rus_translation
+    ans_one = words[1]
+    ans_two = words[2]
+    ans_three = words[3]
+    question = Question(
+        text=text,
+        answers=[
+            Answer(translation, is_correct=True),
+            Answer(ans_one.rus_translation),
+            Answer(ans_two.rus_translation),
+            Answer(ans_three.rus_translation)
+        ],
+        resize_keyboard=True
+    )
+    return question
+
+
 @dp.callback_query(F.data == 'hsk_buttons_1')
 async def send_hsk_buttons(callback: types.CallbackQuery):
     await callback.message.answer(
-        'Пока для этого уровня доступны только карточки',
+        'Приступим к тренировке!',
         reply_markup=main_menu)
     await callback.answer()
 
 
-# @dp.callback_query(F.data == 'main_menu_btn_2')
-# async def run_quiz(callback: types.CallbackQuery):
+@dp.callback_query(F.data == 'main_menu_btn_1')
+async def run_quiz(callback: types.CallbackQuery, state: FSMContext):
+    words = [get_word_from_database() for i in range(4)]
+    hanzi = words[0].word
+    text = f'Переведите на русский язык: {hanzi}'
+    translation = words[0].rus_translation
+    ans_one = words[1]
+    ans_two = words[2]
+    ans_three = words[3]
+    await callback.message.answer(
+        text,
+        reply_markup=ReplyKeyboardMarkup(
+            keyboard=[
+                [KeyboardButton(text=translation),
+                    KeyboardButton(text=ans_one.rus_translation)],
+                [KeyboardButton(text=ans_two.rus_translation),
+                    KeyboardButton(text=ans_three.rus_translation)],
+            ],
+            resize_keyboard=True,
+        ))
+    await callback.answer()
 
 
 async def main():
