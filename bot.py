@@ -6,7 +6,6 @@ from os import getenv
 from random import choice
 
 from aiogram import Bot, Dispatcher, F, types, Router
-from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.memory import SimpleEventIsolation
 from aiogram.filters.command import Command
@@ -17,7 +16,6 @@ from sqlalchemy.orm import Session
 
 from scrapy_hsk.models import Base, Word
 
-import handlers
 from keyboards import main_menu, hsk_buttons
 
 
@@ -67,7 +65,7 @@ async def cmd_start(message: types.Message):
     picture = types.FSInputFile('hey_pic.png')
     await message.answer_photo(picture)
     await message.answer(
-        f'你好 <b>{message.from_user.full_name}</b>!'
+        f'你好 <b>{message.from_user.full_name}</b>!' 
         )
     time.sleep(1)
     await message.answer(
@@ -88,6 +86,11 @@ async def cmd_help(message: types.Message):
     await message.answer(
         'Для начала тренировки отправьте /start и выберите уровень подготовки.'
         )
+
+
+@dp.message(Command('cancel'))
+async def cmd_cancel(message: types.Message):
+    await message.answer('Тренировка отменена')
 
 
 def get_word_from_database():
