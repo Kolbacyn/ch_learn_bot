@@ -1,7 +1,6 @@
 import asyncio
 import logging
 import time
-from dataclasses import dataclass, field
 from os import getenv
 from random import choice
 
@@ -41,23 +40,10 @@ load_dotenv()
 dp = create_dispatcher()
 
 
-@dataclass
-class Answer:
-    """"""
-    text: str
-    is_correct: bool = False
+def get_word_from_database():
+    word = choice(session.query(Word).all())
+    return word
 
-
-@dataclass
-class Question:
-    """"""
-    text: str
-    answers: list[Answer]
-    correct_answer: str = field(init=False)
-
-    def __post_init__(self):
-        self.correct_answer = next(answer.text for answer in self.answers
-                                   if answer.is_correct)
 
 
 @dp.message(Command('start'))
@@ -93,32 +79,6 @@ async def cmd_cancel(message: types.Message):
     await message.answer('Тренировка отменена')
 
 
-def get_word_from_database():
-    word = choice(session.query(Word).all())
-    return word
-
-
-def generate_question():
-    words = [get_word_from_database() for i in range(4)]
-    hanzi = words[0].word
-    text = f'Переведите на русский язык: {hanzi}'
-    translation = words[0].rus_translation
-    ans_one = words[1]
-    ans_two = words[2]
-    ans_three = words[3]
-    question = Question(
-        text=text,
-        answers=[
-            Answer(translation, is_correct=True),
-            Answer(ans_one.rus_translation),
-            Answer(ans_two.rus_translation),
-            Answer(ans_three.rus_translation)
-        ],
-        resize_keyboard=True
-    )
-    return question
-
-
 @dp.callback_query(F.data == 'hsk_buttons_1')
 async def send_hsk_buttons(callback: types.CallbackQuery):
     await callback.message.answer(
@@ -133,19 +93,20 @@ async def run_quiz(callback: types.CallbackQuery, state: FSMContext):
     hanzi = words[0].word
     text = f'Переведите на русский язык: {hanzi}'
     translation = words[0].rus_translation
-    ans_one = words[1]
-    ans_two = words[2]
-    ans_three = words[3]
+    ans_one = words[1].rus_translation
+    ans_two = words[2].rus_translation
+    ans_three = words[3].rus_translation
     await callback.message.answer(
         text,
         reply_markup=ReplyKeyboardMarkup(
             keyboard=[
                 [KeyboardButton(text=translation),
-                    KeyboardButton(text=ans_one.rus_translation)],
-                [KeyboardButton(text=ans_two.rus_translation),
-                    KeyboardButton(text=ans_three.rus_translation)],
+                    KeyboardButton(text=ans_one)],
+                [KeyboardButton(text=ans_two),
+                    KeyboardButton(text=ans_three)],
             ],
             resize_keyboard=True,
+            one_time_keyboard=True
         ))
     await callback.answer()
 
