@@ -1,17 +1,11 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from aiogram.utils.keyboard import InlineKeyboardBuilder
+
 
 main_menu = InlineKeyboardMarkup(inline_keyboard=[
     [
         InlineKeyboardButton(
             text='Карточки',
             callback_data='main_menu_btn_1'
-        )
-    ],
-    [
-        InlineKeyboardButton(
-            text='Quiz',
-            callback_data='main_menu_btn_2'
         )
     ]
 ])
@@ -54,6 +48,13 @@ hsk_buttons = InlineKeyboardMarkup(inline_keyboard=[
         )
     ]
 ])
+
+# exit_to_menu_button = InlineKeyboardMarkup(inline_keyboard=[
+#     InlineKeyboardButton(
+#         text='В меню',
+#         callback_data='exit_to_menu'
+#     )
+# ])
 
 
 # def get_hsk_levels_keybord():
