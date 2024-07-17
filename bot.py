@@ -1,7 +1,6 @@
 import asyncio
 import logging
 import time
-from dataclasses import dataclass, field
 from os import getenv
 from random import choice
 
@@ -9,14 +8,16 @@ from aiogram import Bot, Dispatcher, F, types, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.memory import SimpleEventIsolation
 from aiogram.filters.command import Command
+from aiogram.fsm.scene import SceneRegistry
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
+import constants
 from scrapy_hsk.models import Base, Word
-
 from keyboards import main_menu, hsk_buttons
+from services.quizgame import quiz_router, QuizScene
 
 
 logging.basicConfig(level=logging.INFO)
@@ -33,7 +34,13 @@ def create_dispatcher():
         events_isolation=SimpleEventIsolation()
     )
     dispatcher.include_router(flash_router)
+    dispatcher.include_router(quiz_router)
     # dispatcher.include_router(handlers.router)
+    scene_registry = SceneRegistry(dispatcher)
+    # ... and then register a scene in the registry
+    # by default, Scene will be mounted to the router that passed to the SceneRegistry,
+    # but you can specify the router explicitly using the `router` argument
+    scene_registry.add(QuizScene)
     return dispatcher
 
 
@@ -41,31 +48,17 @@ load_dotenv()
 dp = create_dispatcher()
 
 
-@dataclass
-class Answer:
-    """"""
-    text: str
-    is_correct: bool = False
-
-
-@dataclass
-class Question:
-    """"""
-    text: str
-    answers: list[Answer]
-    correct_answer: str = field(init=False)
-
-    def __post_init__(self):
-        self.correct_answer = next(answer.text for answer in self.answers
-                                   if answer.is_correct)
+def get_word_from_database():
+    word = choice(session.query(Word).all())
+    return word
 
 
 @dp.message(Command('start'))
 async def cmd_start(message: types.Message):
-    picture = types.FSInputFile('hey_pic.png')
+    picture = types.FSInputFile(constants.GREETING_PICTURE)
     await message.answer_photo(picture)
     await message.answer(
-        f'你好 <b>{message.from_user.full_name}</b>!' 
+        f'你好 {message.from_user.full_name}!'
         )
     time.sleep(1)
     await message.answer(
@@ -90,39 +83,13 @@ async def cmd_help(message: types.Message):
 
 @dp.message(Command('cancel'))
 async def cmd_cancel(message: types.Message):
-    await message.answer('Тренировка отменена')
-
-
-def get_word_from_database():
-    word = choice(session.query(Word).all())
-    return word
-
-
-def generate_question():
-    words = [get_word_from_database() for i in range(4)]
-    hanzi = words[0].word
-    text = f'Переведите на русский язык: {hanzi}'
-    translation = words[0].rus_translation
-    ans_one = words[1]
-    ans_two = words[2]
-    ans_three = words[3]
-    question = Question(
-        text=text,
-        answers=[
-            Answer(translation, is_correct=True),
-            Answer(ans_one.rus_translation),
-            Answer(ans_two.rus_translation),
-            Answer(ans_three.rus_translation)
-        ],
-        resize_keyboard=True
-    )
-    return question
+    await message.answer(constants.CANCEL_MESSAGE)
 
 
 @dp.callback_query(F.data == 'hsk_buttons_1')
 async def send_hsk_buttons(callback: types.CallbackQuery):
     await callback.message.answer(
-        'Приступим к тренировке!',
+        constants.START_TRAINING_MESSAGE,
         reply_markup=main_menu)
     await callback.answer()
 
@@ -133,19 +100,20 @@ async def run_quiz(callback: types.CallbackQuery, state: FSMContext):
     hanzi = words[0].word
     text = f'Переведите на русский язык: {hanzi}'
     translation = words[0].rus_translation
-    ans_one = words[1]
-    ans_two = words[2]
-    ans_three = words[3]
+    ans_one = words[1].rus_translation
+    ans_two = words[2].rus_translation
+    ans_three = words[3].rus_translation
     await callback.message.answer(
         text,
         reply_markup=ReplyKeyboardMarkup(
             keyboard=[
                 [KeyboardButton(text=translation),
-                    KeyboardButton(text=ans_one.rus_translation)],
-                [KeyboardButton(text=ans_two.rus_translation),
-                    KeyboardButton(text=ans_three.rus_translation)],
+                    KeyboardButton(text=ans_one)],
+                [KeyboardButton(text=ans_two),
+                    KeyboardButton(text=ans_three)],
             ],
             resize_keyboard=True,
+            one_time_keyboard=True
         ))
     await callback.answer()
 
