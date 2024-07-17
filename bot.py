@@ -8,14 +8,16 @@ from aiogram import Bot, Dispatcher, F, types, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.memory import SimpleEventIsolation
 from aiogram.filters.command import Command
+from aiogram.fsm.scene import SceneRegistry
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
+import constants
 from scrapy_hsk.models import Base, Word
-
 from keyboards import main_menu, hsk_buttons
+from services.quizgame import quiz_router, QuizScene
 
 
 logging.basicConfig(level=logging.INFO)
@@ -32,7 +34,13 @@ def create_dispatcher():
         events_isolation=SimpleEventIsolation()
     )
     dispatcher.include_router(flash_router)
+    dispatcher.include_router(quiz_router)
     # dispatcher.include_router(handlers.router)
+    scene_registry = SceneRegistry(dispatcher)
+    # ... and then register a scene in the registry
+    # by default, Scene will be mounted to the router that passed to the SceneRegistry,
+    # but you can specify the router explicitly using the `router` argument
+    scene_registry.add(QuizScene)
     return dispatcher
 
 
@@ -45,13 +53,12 @@ def get_word_from_database():
     return word
 
 
-
 @dp.message(Command('start'))
 async def cmd_start(message: types.Message):
-    picture = types.FSInputFile('hey_pic.png')
+    picture = types.FSInputFile(constants.GREETING_PICTURE)
     await message.answer_photo(picture)
     await message.answer(
-        f'你好 <b>{message.from_user.full_name}</b>!' 
+        f'你好 {message.from_user.full_name}!'
         )
     time.sleep(1)
     await message.answer(
@@ -76,13 +83,13 @@ async def cmd_help(message: types.Message):
 
 @dp.message(Command('cancel'))
 async def cmd_cancel(message: types.Message):
-    await message.answer('Тренировка отменена')
+    await message.answer(constants.CANCEL_MESSAGE)
 
 
 @dp.callback_query(F.data == 'hsk_buttons_1')
 async def send_hsk_buttons(callback: types.CallbackQuery):
     await callback.message.answer(
-        'Приступим к тренировке!',
+        constants.START_TRAINING_MESSAGE,
         reply_markup=main_menu)
     await callback.answer()
 
