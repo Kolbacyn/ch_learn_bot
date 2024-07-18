@@ -6,6 +6,10 @@ main_menu = InlineKeyboardMarkup(inline_keyboard=[
         InlineKeyboardButton(
             text='Карточки',
             callback_data='main_menu_btn_1'
+        ),
+        InlineKeyboardButton(
+            text='Тест',
+            callback_data='main_menu_btn_2'
         )
     ]
 ])

@@ -191,6 +191,6 @@ quiz_router.message.register(QuizScene.as_handler(), Command('quiz'))
 async def command_start(message: Message, scenes: ScenesManager):
     await scenes.close()
     await message.answer(
-        "Hi! This is a quiz bot. To start the quiz, use the /quiz command.",
+        'Hi! This is a quiz bot. To start the quiz, use the /quiz command.',
         reply_markup=ReplyKeyboardRemove(),
     )
