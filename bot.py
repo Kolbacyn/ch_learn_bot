@@ -8,7 +8,7 @@ from aiogram import Bot, Dispatcher, F, types, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.memory import SimpleEventIsolation
 from aiogram.filters.command import Command
-from aiogram.fsm.scene import SceneRegistry
+from aiogram.fsm.scene import SceneRegistry, ScenesManager
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
@@ -95,7 +95,7 @@ async def send_hsk_buttons(callback: types.CallbackQuery):
 
 
 @dp.callback_query(F.data == 'main_menu_btn_1')
-async def run_quiz(callback: types.CallbackQuery, state: FSMContext):
+async def run_flashcards(callback: types.CallbackQuery, state: FSMContext):
     words = [get_word_from_database() for i in range(4)]
     hanzi = words[0].word
     text = f'Переведите на русский язык: {hanzi}'
@@ -115,6 +115,18 @@ async def run_quiz(callback: types.CallbackQuery, state: FSMContext):
             resize_keyboard=True,
             one_time_keyboard=True
         ))
+    await callback.answer()
+
+
+@dp.callback_query(F.data == 'main_menu_btn_2')
+async def run_quiz(callback: types.CallbackQuery,
+                   scenes: ScenesManager,
+                   state: FSMContext = None):
+    await callback.message.answer(
+        'Начинаем тренировку',
+    )
+    await state.update_data(step=0)
+    await scenes.enter(QuizScene)
     await callback.answer()
 
 
