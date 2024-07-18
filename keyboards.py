@@ -1,4 +1,5 @@
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
+                           ReplyKeyboardMarkup, KeyboardButton)
 
 
 main_menu = InlineKeyboardMarkup(inline_keyboard=[
@@ -8,7 +9,7 @@ main_menu = InlineKeyboardMarkup(inline_keyboard=[
             callback_data='main_menu_btn_1'
         ),
         InlineKeyboardButton(
-            text='Тест',
+            text='Квиз',
             callback_data='main_menu_btn_2'
         )
     ]
@@ -52,6 +53,30 @@ hsk_buttons = InlineKeyboardMarkup(inline_keyboard=[
         )
     ]
 ])
+
+
+attempts_quantity_buttons = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(
+            text='10 попыток',
+            callback_data='attempts_quantity_1'
+        ),
+         KeyboardButton(
+            text='20 попыток',
+            callback_data='attempts_quantity_2'
+        ),
+         KeyboardButton(
+            text='50 попыток',
+            callback_data='attempts_quantity_3'
+        ),
+         KeyboardButton(
+            text='100 попыток',
+            callback_data='attempts_quantity_4'
+        )],
+    ],
+    resize_keyboard=True,
+    one_time_keyboard=True
+)
 
 # exit_to_menu_button = InlineKeyboardMarkup(inline_keyboard=[
 #     InlineKeyboardButton(
