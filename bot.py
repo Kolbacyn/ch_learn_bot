@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 
 import constants
 from scrapy_hsk.models import Base, Word
-from keyboards import main_menu, hsk_buttons
+from keyboards import main_menu, hsk_buttons, attempts_quantity_buttons
 from services.quizgame import quiz_router, QuizScene
 
 
@@ -123,16 +123,9 @@ async def run_quiz(callback: types.CallbackQuery,
                    scenes: ScenesManager,
                    state: FSMContext = None):
     await callback.message.answer(
-        'Выберете количество вопросов:',
-        reply_markup=ReplyKeyboardMarkup(
-            keyboard=[
-                [KeyboardButton(text='10'),
-                 KeyboardButton(text='20'),
-                 KeyboardButton(text='50')]
-            ],
-            resize_keyboard=True,
-            one_time_keyboard=True
-        ))
+        'Выберете количество попыток:',
+        reply_markup=attempts_quantity_buttons,
+        )
     await state.update_data(step=-1)
     await scenes.enter(QuizScene)
     await callback.answer()
