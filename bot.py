@@ -2,7 +2,6 @@ import asyncio
 import logging
 import time
 from os import getenv
-from random import choice
 
 from aiogram import Bot, Dispatcher, F, types, Router
 from aiogram.fsm.context import FSMContext
@@ -11,11 +10,8 @@ from aiogram.filters.command import Command
 from aiogram.fsm.scene import SceneRegistry, ScenesManager
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 from dotenv import load_dotenv
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
 
 import constants
-from scrapy_hsk.models import Base, Word
 from keyboards import main_menu, hsk_buttons, attempts_quantity_buttons
 from services.quizgame import quiz_router, QuizScene
 
@@ -23,10 +19,6 @@ from services.quizgame import quiz_router, QuizScene
 logging.basicConfig(level=logging.INFO)
 
 flash_router = Router(name=__name__)
-
-engine = create_engine('sqlite:///sqlite.db', echo=False)
-Base.metadata.create_all(engine)
-session = Session(engine)
 
 
 def create_dispatcher():
@@ -46,11 +38,6 @@ def create_dispatcher():
 
 load_dotenv()
 dp = create_dispatcher()
-
-
-def get_word_from_database():
-    word = choice(session.query(Word).all())
-    return word
 
 
 @dp.message(Command('start'))

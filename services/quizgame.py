@@ -1,10 +1,6 @@
-import asyncio
-import logging
-from dataclasses import dataclass, field
-
 from typing import Any
 
-from aiogram import Bot, Dispatcher, F, Router, html
+from aiogram import F, Router, html
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.scene import Scene, SceneRegistry, ScenesManager, on
@@ -18,57 +14,13 @@ from aiogram.utils.formatting import (
     as_section,
 )
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
+
 from dataclass import Answer, Question
+from utils import generate_question
 
 
-# Fake data, in real application you should use a database or something else
-QUESTIONS = [
-    Question(
-        text="What is the capital of France?",
-        answers=[
-            Answer("Paris", is_correct=True),
-            Answer("London"),
-            Answer("Berlin"),
-            Answer("Madrid"),
-        ],
-    ),
-    Question(
-        text="What is the capital of Spain?",
-        answers=[
-            Answer("Paris"),
-            Answer("London"),
-            Answer("Berlin"),
-            Answer("Madrid", is_correct=True),
-        ],
-    ),
-    Question(
-        text="What is the capital of Germany?",
-        answers=[
-            Answer("Paris"),
-            Answer("London"),
-            Answer("Berlin", is_correct=True),
-            Answer("Madrid"),
-        ],
-    ),
-    Question(
-        text="What is the capital of England?",
-        answers=[
-            Answer("Paris"),
-            Answer("London", is_correct=True),
-            Answer("Berlin"),
-            Answer("Madrid"),
-        ],
-    ),
-    Question(
-        text="What is the capital of Italy?",
-        answers=[
-            Answer("Paris"),
-            Answer("London"),
-            Answer("Berlin"),
-            Answer("Rome", is_correct=True),
-        ],
-    ),
-]
+# # Fake data, in real application you should use a database or something else
+QUESTIONS = [generate_question() for i in range(20)]
 
 
 class QuizScene(Scene, state='quiz'):
