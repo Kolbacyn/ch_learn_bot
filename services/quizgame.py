@@ -3,8 +3,7 @@ from typing import Any
 from aiogram import F, Router, html
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.scene import Scene, SceneRegistry, ScenesManager, on
-from aiogram.fsm.storage.memory import SimpleEventIsolation
+from aiogram.fsm.scene import Scene, ScenesManager, on
 from aiogram.types import KeyboardButton, Message, ReplyKeyboardRemove
 from aiogram.utils.formatting import (
     Bold,
@@ -15,7 +14,6 @@ from aiogram.utils.formatting import (
 )
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from dataclass import Answer, Question
 from utils import generate_question
 
 
@@ -33,7 +31,7 @@ class QuizScene(Scene, state='quiz'):
         '''
         if not step:
             # This is the first step, so we should greet the user
-            await message.answer("Welcome to the quiz!")
+            await message.answer('Добро пожаловать в игру!')
 
         try:
             quiz = QUESTIONS[step]
@@ -45,8 +43,8 @@ class QuizScene(Scene, state='quiz'):
         markup.add(*[KeyboardButton(text=answer.text) for answer in quiz.answers])
 
         if step > 0:
-            markup.button(text="🔙 Back")
-        markup.button(text="🚫 Exit")
+            markup.button(text='🔙 Назад')
+        markup.button(text='🚫 Выход')
 
         await state.update_data(step=step)
         return await message.answer(
@@ -59,7 +57,7 @@ class QuizScene(Scene, state='quiz'):
         '''
         '''
         data = await state.get_data()
-        answers = data.get("answers", {})
+        answers = data.get('answers', {})
 
         correct = 0
         incorrect = 0
@@ -69,25 +67,25 @@ class QuizScene(Scene, state='quiz'):
             is_correct = answer == quiz.correct_answer
             if is_correct:
                 correct += 1
-                icon = "✅"
+                icon = '✅'
             else:
                 incorrect += 1
-                icon = "❌"
+                icon = '❌'
             if answer is None:
-                answer = "no answer"
+                answer = 'нет ответа'
             user_answers.append(f"{quiz.text} ({icon} {html.quote(answer)})")
 
         content = as_list(
             as_section(
-                Bold("Your answers:"),
+                Bold('Ваши ответы:'),
                 as_numbered_list(*user_answers),
             ),
-            "",
+            '',
             as_section(
-                Bold("Summary:"),
+                Bold('Итог:'),
                 as_list(
-                    as_key_value("Correct", correct),
-                    as_key_value("Incorrect", incorrect),
+                    as_key_value('Верно', correct),
+                    as_key_value('Неверно', incorrect),
                 ),
             ),
         )
@@ -95,12 +93,12 @@ class QuizScene(Scene, state='quiz'):
         await message.answer(**content.as_kwargs(), reply_markup=ReplyKeyboardRemove())
         await state.set_data({})
 
-    @on.message(F.text == "🔙 Back")
+    @on.message(F.text == '🔙 Назад')
     async def back(self, message: Message, state: FSMContext) -> None:
         '''
         '''
         data = await state.get_data()
-        step = data["step"]
+        step = data['step']
 
         previous_step = step - 1
         if previous_step < 0:
@@ -109,7 +107,7 @@ class QuizScene(Scene, state='quiz'):
             return await self.wizard.exit()
         return await self.wizard.back(step=previous_step)
 
-    @on.message(F.text == "🚫 Exit")
+    @on.message(F.text == '🚫 Выход')
     async def exit(self, message: Message) -> None:
         '''
         '''
@@ -120,8 +118,8 @@ class QuizScene(Scene, state='quiz'):
         '''
         '''
         data = await state.get_data()
-        step = data["step"]
-        answers = data.get("answers", {})
+        step = data['step']
+        answers = data.get('answers', {})
         answers[step] = message.text
         await state.update_data(answers=answers)
 
@@ -131,7 +129,7 @@ class QuizScene(Scene, state='quiz'):
     async def unknown_message(self, message: Message) -> None:
         '''
         '''
-        await message.answer("Please select an answer.")
+        await message.answer('Пожалуйста, выберите ответ.')
 
 
 quiz_router = Router(name=__name__)
