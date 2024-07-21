@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 import constants
 from keyboards import main_menu, hsk_buttons, attempts_quantity_buttons
 from services.quizgame import quiz_router, QuizScene
+from utils import get_word_from_database
 
 
 logging.basicConfig(level=logging.INFO)
