@@ -14,6 +14,7 @@ from aiogram.utils.formatting import (
 )
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
+import constants
 from utils import generate_question
 
 
@@ -26,12 +27,15 @@ class QuizScene(Scene, state='quiz'):
     '''
 
     @on.message.enter()
-    async def on_enter(self, message: Message, state: FSMContext, step: int = 0) -> Any:
+    async def on_enter(self,
+                       message: Message,
+                       state: FSMContext,
+                       step: int = 0) -> Any:
         '''
         '''
         if not step:
             # This is the first step, so we should greet the user
-            await message.answer('Добро пожаловать в игру!')
+            await message.answer(constants.WELCOME_TO_QUIZ_MSG)
 
         try:
             quiz = QUESTIONS[step]
@@ -43,8 +47,8 @@ class QuizScene(Scene, state='quiz'):
         markup.add(*[KeyboardButton(text=answer.text) for answer in quiz.answers])
 
         if step > 0:
-            markup.button(text='🔙 Назад')
-        markup.button(text='🚫 Выход')
+            markup.button(text=constants.CANCEL_QUIZ_BTN)
+        markup.button(text=constants.EXIT_QUIZ_BTN)
 
         await state.update_data(step=step)
         return await message.answer(
@@ -53,7 +57,9 @@ class QuizScene(Scene, state='quiz'):
         )
 
     @on.message.exit()
-    async def on_exit(self, message: Message, state: FSMContext) -> None:
+    async def on_exit(self,
+                      message: Message,
+                      state: FSMContext) -> None:
         '''
         '''
         data = await state.get_data()
@@ -90,11 +96,16 @@ class QuizScene(Scene, state='quiz'):
             ),
         )
 
-        await message.answer(**content.as_kwargs(), reply_markup=ReplyKeyboardRemove())
+        await message.answer(
+            **content.as_kwargs(),
+            reply_markup=ReplyKeyboardRemove()
+            )
         await state.set_data({})
 
-    @on.message(F.text == '🔙 Назад')
-    async def back(self, message: Message, state: FSMContext) -> None:
+    @on.message(F.text == constants.CANCEL_QUIZ_BTN)
+    async def back(self,
+                   message: Message,
+                   state: FSMContext) -> None:
         '''
         '''
         data = await state.get_data()
@@ -107,14 +118,16 @@ class QuizScene(Scene, state='quiz'):
             return await self.wizard.exit()
         return await self.wizard.back(step=previous_step)
 
-    @on.message(F.text == '🚫 Выход')
+    @on.message(F.text == constants.EXIT_QUIZ_BTN)
     async def exit(self, message: Message) -> None:
         '''
         '''
         await self.wizard.exit()
 
     @on.message(F.text)
-    async def answer(self, message: Message, state: FSMContext) -> None:
+    async def answer(self,
+                     message: Message,
+                     state: FSMContext) -> None:
         '''
         '''
         data = await state.get_data()
@@ -126,10 +139,11 @@ class QuizScene(Scene, state='quiz'):
         await self.wizard.retake(step=step + 1)
 
     @on.message()
-    async def unknown_message(self, message: Message) -> None:
+    async def unknown_message(self,
+                              message: Message) -> None:
         '''
         '''
-        await message.answer('Пожалуйста, выберите ответ.')
+        await message.answer(constants.CHOOSE_ANSWER_MSG)
 
 
 quiz_router = Router(name=__name__)
@@ -137,7 +151,7 @@ quiz_router = Router(name=__name__)
 quiz_router.message.register(QuizScene.as_handler(), Command('quiz'))
 
 
-@quiz_router.message(Command("start"))
+@quiz_router.message(Command('start'))
 async def command_start(message: Message, scenes: ScenesManager):
     await scenes.close()
     await message.answer(
