@@ -1,5 +1,6 @@
 from random import choice
 
+from aiogram.filters.callback_data import CallbackData
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
@@ -35,3 +36,7 @@ def generate_question():
         ],
     )
     return question
+
+
+class AttemptsCallback(CallbackData, prefix='attempts'):
+    quantity: int
