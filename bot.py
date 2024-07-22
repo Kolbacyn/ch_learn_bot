@@ -14,12 +14,14 @@ from dotenv import load_dotenv
 import constants
 from keyboards import main_menu, hsk_buttons, attempts_quantity_buttons
 from services.quizgame import quiz_router, QuizScene
-from utils import get_word_from_database
+from utils import get_word_from_database, AttemptsCallback
 
 
 logging.basicConfig(level=logging.INFO)
 
 flash_router = Router(name=__name__)
+
+users: dict[int, dict[str, list]] = {}
 
 
 def create_dispatcher():
@@ -43,6 +45,8 @@ dp = create_dispatcher()
 
 @dp.message(Command('start'))
 async def cmd_start(message: types.Message):
+    if message.from_user.id not in users:
+        users[message.from_user.id] = {}
     picture = types.FSInputFile(constants.GREETING_PICTURE)
     await message.answer_photo(picture)
     await message.answer(
@@ -117,6 +121,17 @@ async def run_quiz(callback: types.CallbackQuery,
     await state.update_data(step=-1)
     await scenes.enter(QuizScene)
     await callback.answer()
+
+
+@dp.callback_query(AttemptsCallback.filter())
+async def set_attempts(callback: types.CallbackQuery,
+                       callback_data: AttemptsCallback):
+    data = callback_data.quantity
+    users[callback.from_user.id]['attempts'] = data
+    await callback.message.answer(
+        users[callback.from_user.id]['attempts']
+    )
+    print(callback_data)
 
 
 async def main():

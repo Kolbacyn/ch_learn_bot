@@ -1,6 +1,8 @@
 from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
                            ReplyKeyboardMarkup, KeyboardButton)
 
+from utils import AttemptsCallback
+
 
 main_menu = InlineKeyboardMarkup(inline_keyboard=[
     [
@@ -59,19 +61,27 @@ attempts_quantity_buttons = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(
             text='10 попыток',
-            callback_data='attempts_quantity_1'
+            callback_data=AttemptsCallback(
+                quantity=10
+            ).pack()
         ),
          KeyboardButton(
             text='20 попыток',
-            callback_data='attempts_quantity_2'
+            callback_data=AttemptsCallback(
+                quantity=20
+            ).pack()
         ),
          KeyboardButton(
             text='50 попыток',
-            callback_data='attempts_quantity_3'
+            callback_data=AttemptsCallback(
+                quantity=50
+            ).pack()
         ),
          KeyboardButton(
             text='100 попыток',
-            callback_data='attempts_quantity_4'
+            callback_data=AttemptsCallback(
+                quantity=100
+            ).pack()
         )],
     ],
     resize_keyboard=True,

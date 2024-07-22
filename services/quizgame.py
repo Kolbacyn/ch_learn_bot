@@ -17,9 +17,9 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder
 import constants
 from utils import generate_question
 
-
+quantity = 10
 # # Fake data, in real application you should use a database or something else
-QUESTIONS = [generate_question() for i in range(20)]
+QUESTIONS = [generate_question() for i in range(quantity)]
 
 
 class QuizScene(Scene, state='quiz'):
