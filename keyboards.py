@@ -1,7 +1,7 @@
 from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
                            ReplyKeyboardMarkup, KeyboardButton)
-
-from utils import AttemptsCallback
+from aiogram.utils.keyboard import InlineKeyboardBuilder
+from utils import AttemptsCallback, AttemptsQuantity
 
 
 main_menu = InlineKeyboardMarkup(inline_keyboard=[
@@ -57,36 +57,54 @@ hsk_buttons = InlineKeyboardMarkup(inline_keyboard=[
 ])
 
 
-attempts_quantity_buttons = ReplyKeyboardMarkup(
-    keyboard=[
-        [KeyboardButton(
-            text='10 попыток',
-            callback_data=AttemptsCallback(
-                quantity=10
-            ).pack()
-        ),
-         KeyboardButton(
-            text='20 попыток',
-            callback_data=AttemptsCallback(
-                quantity=20
-            ).pack()
-        ),
-         KeyboardButton(
-            text='50 попыток',
-            callback_data=AttemptsCallback(
-                quantity=50
-            ).pack()
-        ),
-         KeyboardButton(
-            text='100 попыток',
-            callback_data=AttemptsCallback(
-                quantity=100
-            ).pack()
-        )],
-    ],
-    resize_keyboard=True,
-    one_time_keyboard=True
-)
+def build_attempts_kb() -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+    builder.button(text='10 попыток',
+                   callback_data=AttemptsCallback(
+                       quantity=AttemptsQuantity.ten).pack()
+                       )
+    builder.button(text='20 попыток',
+                   callback_data=AttemptsCallback(
+                       quantity=AttemptsQuantity.twenty).pack()
+                       )
+    builder.button(text='50 попыток',
+                   callback_data=AttemptsCallback(
+                       quantity=AttemptsQuantity.fifty).pack()
+                       )
+    builder.button(text='100 попыток',
+                   callback_data=AttemptsCallback(
+                       quantity=AttemptsQuantity.hundred).pack()
+                       )
+    return builder.as_markup()
+# attempts_quantity_buttons = ReplyKeyboardMarkup(
+#     keyboard=[
+#         [KeyboardButton(
+#             text='10 попыток',
+#             callback_data=AttemptsCallback(
+#                 quantity=AttemptsQuantity.ten
+#             ).pack()
+#         ),
+#          KeyboardButton(
+#             text='20 попыток',
+#             callback_data=AttemptsCallback(
+#                 quantity=AttemptsQuantity.twenty
+#             ).pack()
+#         ),
+#          KeyboardButton(
+#             text='50 попыток',
+#             callback_data=AttemptsCallback(
+#                 quantity=AttemptsQuantity.fifty
+#             ).pack()
+#         ),
+#          KeyboardButton(
+#             text='100 попыток',
+#             callback_data=AttemptsCallback(
+#                 quantity=AttemptsQuantity.hundred
+#             ).pack()
+#         )],
+#     ],
+#     resize_keyboard=True
+# )
 
 # exit_to_menu_button = InlineKeyboardMarkup(inline_keyboard=[
 #     InlineKeyboardButton(

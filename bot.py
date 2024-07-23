@@ -12,7 +12,8 @@ from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 from dotenv import load_dotenv
 
 import constants
-from keyboards import main_menu, hsk_buttons, attempts_quantity_buttons
+from handlers import router as attempts_router
+from keyboards import main_menu, hsk_buttons, build_attempts_kb
 from services.quizgame import quiz_router, QuizScene
 from utils import get_word_from_database, AttemptsCallback
 
@@ -30,6 +31,7 @@ def create_dispatcher():
     )
     dispatcher.include_router(flash_router)
     dispatcher.include_router(quiz_router)
+    dispatcher.include_router(attempts_router)
     # dispatcher.include_router(handlers.router)
     scene_registry = SceneRegistry(dispatcher)
     # ... and then register a scene in the registry
@@ -59,7 +61,7 @@ async def cmd_start(message: types.Message):
     time.sleep(1)
     await message.answer(
         'Выбери уровень подготовки',
-        reply_markup=hsk_buttons
+        reply_markup=build_attempts_kb()
         )
 
 
@@ -110,6 +112,18 @@ async def run_flashcards(callback: types.CallbackQuery, state: FSMContext):
     await callback.answer()
 
 
+# @dp.callback_query(AttemptsCallback.filter())
+# async def set_attempts(callback: types.CallbackQuery,
+#                        callback_data: AttemptsCallback):
+#     logging.info(callback_data)
+#     data = callback_data.quantity
+#     await callback.message.answer(
+#         'h'
+#     )
+#     print(data)
+#     await callback.answer()
+
+
 @dp.callback_query(F.data == 'main_menu_btn_2')
 async def run_quiz(callback: types.CallbackQuery,
                    scenes: ScenesManager,
@@ -121,17 +135,6 @@ async def run_quiz(callback: types.CallbackQuery,
     await state.update_data(step=-1)
     await scenes.enter(QuizScene)
     await callback.answer()
-
-
-@dp.callback_query(AttemptsCallback.filter())
-async def set_attempts(callback: types.CallbackQuery,
-                       callback_data: AttemptsCallback):
-    data = callback_data.quantity
-    users[callback.from_user.id]['attempts'] = data
-    await callback.message.answer(
-        users[callback.from_user.id]['attempts']
-    )
-    print(callback_data)
 
 
 async def main():
