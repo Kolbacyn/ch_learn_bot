@@ -1,10 +1,18 @@
-from aiogram import Router
+from aiogram import Router, types
 from aiogram.types import Message
+from utils import AttemptsQuantity, AttemptsCallback
+import logging
 
 router = Router()
 
 
-# Хэндлер для сообщений, которые не попали в другие хэндлеры
-@router.message()
-async def send_answer(message: Message):
-    await message.answer(text='other_answer')
+@router.callback_query(AttemptsCallback.filter())
+async def send_attempts(callback: types.CallbackQuery,
+                        callback_data: AttemptsCallback):
+    logging.info(callback_data)
+    await callback.answer(
+        text=f'Attempts: {callback_data.quantity}'
+    )
+    await callback.message.answer(
+        text=f'Attempts: {callback_data.quantity}'
+    )

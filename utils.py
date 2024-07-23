@@ -1,4 +1,5 @@
 from random import choice
+from enum import Enum
 
 from aiogram.filters.callback_data import CallbackData
 from sqlalchemy import create_engine
@@ -38,5 +39,12 @@ def generate_question():
     return question
 
 
+class AttemptsQuantity(Enum):
+    ten = '10'
+    twenty = '20'
+    fifty = '50'
+    hundred = '100'
+
+
 class AttemptsCallback(CallbackData, prefix='attempts'):
-    quantity: int
+    quantity: AttemptsQuantity
