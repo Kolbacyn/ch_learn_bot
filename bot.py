@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 
 import constants
 from handlers import router as attempts_router
-from keyboards import main_menu, hsk_buttons, build_attempts_kb
+from keyboards import build_hsk_kb, build_main_menu_kb, build_attempts_kb
 from services.quizgame import quiz_router, QuizScene
 from utils import get_word_from_database, AttemptsCallback
 
@@ -61,7 +61,7 @@ async def cmd_start(message: types.Message):
     time.sleep(1)
     await message.answer(
         'Выбери уровень подготовки',
-        reply_markup=build_attempts_kb()
+        reply_markup=build_hsk_kb()
         )
 
 
@@ -84,7 +84,7 @@ async def cmd_cancel(message: types.Message):
 async def send_hsk_buttons(callback: types.CallbackQuery):
     await callback.message.answer(
         constants.START_TRAINING_MESSAGE,
-        reply_markup=main_menu)
+        reply_markup=build_main_menu_kb())
     await callback.answer()
 
 
@@ -130,7 +130,7 @@ async def run_quiz(callback: types.CallbackQuery,
                    state: FSMContext = None):
     await callback.message.answer(
         'Выберете количество попыток:',
-        reply_markup=attempts_quantity_buttons,
+        reply_markup=build_attempts_kb(),
         )
     await state.update_data(step=-1)
     await scenes.enter(QuizScene)
