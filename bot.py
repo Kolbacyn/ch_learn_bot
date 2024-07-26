@@ -13,7 +13,8 @@ from dotenv import load_dotenv
 
 import constants
 from handlers import router as attempts_router
-from keyboards import build_hsk_kb, build_main_menu_kb, build_attempts_kb
+from quizstate.quiz_handlers import router as quizy_router
+from keyboards import build_hsk_kb, build_main_menu_kb, build_attempts_kb, build_attempts_kb2
 from services.quizgame import quiz_router, QuizScene
 from utils import get_word_from_database, AttemptsCallback
 
@@ -30,7 +31,8 @@ def create_dispatcher():
         events_isolation=SimpleEventIsolation()
     )
     dispatcher.include_router(flash_router)
-    dispatcher.include_router(quiz_router)
+    # dispatcher.include_router(quiz_router)
+    dispatcher.include_router(quizy_router)
     dispatcher.include_router(attempts_router)
     # dispatcher.include_router(handlers.router)
     scene_registry = SceneRegistry(dispatcher)
@@ -124,17 +126,28 @@ async def run_flashcards(callback: types.CallbackQuery, state: FSMContext):
 #     await callback.answer()
 
 
-@dp.callback_query(F.data == 'main_menu_btn_2')
-async def run_quiz(callback: types.CallbackQuery,
-                   scenes: ScenesManager,
-                   state: FSMContext = None):
-    await callback.message.answer(
-        'Выберете количество попыток:',
-        reply_markup=build_attempts_kb(),
-        )
-    await state.update_data(step=-1)
-    await scenes.enter(QuizScene)
-    await callback.answer()
+# @dp.callback_query(F.data == 'main_menu_btn_2')
+# async def run_quiz(callback: types.CallbackQuery,
+#                    scenes: ScenesManager,
+#                    state: FSMContext = None):
+#     await callback.message.answer(
+#         'Выберете количество попыток:',
+#         reply_markup=build_attempts_kb()
+#         )
+
+
+
+# @dp.callback_query(F.data == 'main_menu_btn_2')
+# async def run_quiz(callback: types.CallbackQuery,
+#                    scenes: ScenesManager,
+#                    state: FSMContext = None):
+#     await callback.message.answer(
+#         'Выберете количество попыток:',
+#         reply_markup=build_attempts_kb()
+#         )
+#     await state.update_data(step=-1)
+#     await scenes.enter(QuizScene)
+#     await callback.answer()
 
 
 async def main():
