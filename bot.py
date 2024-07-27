@@ -1,18 +1,12 @@
 import asyncio
 import logging
-import time
 from os import getenv
 
-from aiogram import Bot, Dispatcher, F, types, Router
-from aiogram.fsm.context import FSMContext
+from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import SimpleEventIsolation
-from aiogram.filters.command import Command
-from aiogram.fsm.scene import SceneRegistry, ScenesManager
-from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 from dotenv import load_dotenv
 
 from routers import router as main_router
-import utilities.constants as constants
 
 logging.basicConfig(level=logging.INFO)
 
