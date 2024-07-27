@@ -1,7 +1,7 @@
 from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
                            ReplyKeyboardMarkup, KeyboardButton)
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from utils import AttemptsCallback, AttemptsQuantity
+from utilities.utils import AttemptsCallback, AttemptsQuantity
 
 
 def build_main_menu_kb() -> InlineKeyboardMarkup:
