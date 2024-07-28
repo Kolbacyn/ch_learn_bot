@@ -2,7 +2,7 @@ import logging
 
 from aiogram import types, F, Router
 from aiogram.fsm.context import FSMContext
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 from utilities.utils import generate_question
@@ -13,6 +13,17 @@ router = Router(name=__name__)
 QUESTIONS = [generate_question() for _ in range(10)]
 markup = ReplyKeyboardBuilder()
 markup.add(*[KeyboardButton(text=answer.text) for answer in QUESTIONS[0].answers])
+
+
+def build_answers_kb(step: int):
+    kb = ReplyKeyboardBuilder()
+    answers = QUESTIONS[step].answers
+    kb.add(*[KeyboardButton(text=answer.text) for answer in answers])
+    if step > 0:
+        kb.button(text="🔙 Back")
+    kb.button(text="🚫 Exit")
+    kb.adjust(2)
+    return kb
 
 
 @router.callback_query(F.data == 'main_menu_btn_1')
@@ -30,19 +41,18 @@ async def enter_quiz(callback: types.CallbackQuery,
         await callback.message.answer('Game over!')
         await state.clear()
         return
-    if step > 0:
-        markup.button(text="🔙 Back")
-    markup.button(text="🚫 Exit")
     await state.update_data(step=step)
     await callback.message.answer(
         QUESTIONS[step].text,
-        reply_markup=markup.adjust(2).as_markup(resize_keyboard=True)
+        reply_markup=build_answers_kb(step).as_markup(resize_keyboard=True)
     )
+    logging.info(QUESTIONS[step].answers)
     await callback.answer()
 
 
 @router.message(F.text)
-async def check_answer(message: types.Message, state: FSMContext):
+async def check_answer(message: types.Message,
+                       state: FSMContext):
     data = await state.get_data()
     step = data['step']
     answers = data.get('answers', {})
@@ -50,5 +60,13 @@ async def check_answer(message: types.Message, state: FSMContext):
     await state.update_data(answers=answers)
     await state.update_data(step=step + 1)
     logging.info(answers)
+    step = step + 1
+    await message.answer(
+        QUESTIONS[step].text,
+        reply_markup=build_answers_kb(step).as_markup(resize_keyboard=True)
+    )
 
-
+    if step == len(QUESTIONS):
+        await message.answer('Game over!',
+                             reply_markup=ReplyKeyboardRemove())
+        await state.clear()
