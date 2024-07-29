@@ -1,4 +1,4 @@
-from random import choice
+from random import choice, sample
 from enum import Enum
 
 from aiogram.filters.callback_data import CallbackData
@@ -29,12 +29,11 @@ def generate_question():
     ans_three = words[3]
     question = Question(
         text=text,
-        answers=[
-            Answer(translation, is_correct=True),
-            Answer(ans_one.rus_translation),
-            Answer(ans_two.rus_translation),
-            Answer(ans_three.rus_translation)
-        ],
+        answers=sample([Answer(translation, is_correct=True),
+                        Answer(ans_one.rus_translation),
+                        Answer(ans_two.rus_translation),
+                        Answer(ans_three.rus_translation)],
+                       k=4),
     )
     return question
 
