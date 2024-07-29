@@ -2,6 +2,7 @@ import time
 
 from aiogram import types, Router
 from aiogram.filters.command import Command
+from aiogram.fsm.context import FSMContext
 
 from keyboards import build_hsk_kb
 import utilities.constants as constants
@@ -39,5 +40,8 @@ async def cmd_help(message: types.Message):
 
 
 @router.message(Command('cancel'))
-async def cmd_cancel(message: types.Message):
+async def cmd_cancel(message: types.Message,
+                     state: FSMContext):
     await message.answer(constants.CANCEL_MESSAGE)
+    await state.clear()
+    await message.answer('Начнем сначала!', reply_markup=build_hsk_kb())

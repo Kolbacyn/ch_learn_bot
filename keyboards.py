@@ -7,11 +7,11 @@ from utilities.utils import AttemptsCallback, AttemptsQuantity
 def build_main_menu_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.button(
-        text='Карточки',
+        text='Квиз',
         callback_data='main_menu_btn_1'
     )
     builder.button(
-        text='Квиз',
+        text='Карточки',
         callback_data='main_menu_btn_2'
     )
     return builder.as_markup()

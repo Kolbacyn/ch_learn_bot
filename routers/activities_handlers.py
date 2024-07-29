@@ -70,9 +70,7 @@ async def enter_quiz(callback: types.CallbackQuery,
                      step: int = 0
                      ):
     if not step:
-        await callback.message.answer(
-            'Добро пожаловать в игру!'
-        )
+        await callback.message.answer('Добро пожаловать в игру!')
     try:
         QUESTIONS[step]
     except IndexError:
