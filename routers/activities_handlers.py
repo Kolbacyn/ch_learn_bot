@@ -20,8 +20,8 @@ def build_answers_kb(step: int):
     answers = QUESTIONS[step].answers
     kb.add(*[KeyboardButton(text=answer.text) for answer in answers])
     if step > 0:
-        kb.button(text="🔙 Back")
-    kb.button(text="🚫 Exit")
+        kb.button(text='🔙 Back')
+    kb.button(text='🚫 Exit')
     kb.adjust(2)
     return kb
 
@@ -50,11 +50,15 @@ async def enter_quiz(callback: types.CallbackQuery,
     await callback.answer()
 
 
-@router.message(F.text)
+@router.message(F.text != '🚫 Exit', F.text != '🔙 Back')
 async def check_answer(message: types.Message,
                        state: FSMContext):
     data = await state.get_data()
     step = data['step']
+    if step == len(QUESTIONS) - 1:
+        await message.answer('Game over!',
+                             reply_markup=ReplyKeyboardRemove())
+        await state.clear()
     answers = data.get('answers', {})
     answers[step] = message.text
     await state.update_data(answers=answers)
@@ -66,7 +70,24 @@ async def check_answer(message: types.Message,
         reply_markup=build_answers_kb(step).as_markup(resize_keyboard=True)
     )
 
-    if step == len(QUESTIONS):
-        await message.answer('Game over!',
-                             reply_markup=ReplyKeyboardRemove())
-        await state.clear()
+
+@router.message(F.text == '🚫 Exit')
+async def exit_game(message: types.Message,
+                    state: FSMContext):
+    await message.answer('Game over!',
+                         reply_markup=ReplyKeyboardRemove())
+    await state.clear()
+    await message.answer('Bye!')
+
+
+@router.message(F.text == '🔙 Back')
+async def back_step(message: types.Message,
+                    state: FSMContext):
+    data = await state.get_data()
+    step = data.get('step')
+    step -= 1
+    await state.update_data(step=step)
+    await message.answer(
+        QUESTIONS[step].text,
+        reply_markup=build_answers_kb(step).as_markup(resize_keyboard=True)
+    )
