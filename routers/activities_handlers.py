@@ -12,6 +12,7 @@ from aiogram.utils.formatting import (
     as_section,
 )
 
+from utilities import constants
 from utilities.utils import generate_question
 
 router = Router(name=__name__)
@@ -24,8 +25,8 @@ def build_answers_kb(step: int):
     answers = QUESTIONS[step].answers
     kb.add(*[KeyboardButton(text=answer.text) for answer in answers])
     if step > 0:
-        kb.button(text='🔙 Назад')
-    kb.button(text='🚫 Выход')
+        kb.button(text=constants.CANCEL_QUIZ_BTN)
+    kb.button(text=constants.EXIT_QUIZ_BTN)
     kb.adjust(2)
     return kb
 
@@ -39,10 +40,10 @@ def make_summary(answers: dict):
         is_correct = answer == quiz.correct_answer
         if is_correct:
             correct += 1
-            icon = "✅"
+            icon = '✅'
         else:
             incorrect += 1
-            icon = "❌"
+            icon = '❌'
         if answer is None:
             answer = 'нет ответа'
         user_answers.append(f'{quiz.text} ({icon} {html.quote(answer)})')
@@ -70,11 +71,11 @@ async def enter_quiz(callback: types.CallbackQuery,
                      step: int = 0
                      ):
     if not step:
-        await callback.message.answer('Добро пожаловать в игру!')
+        await callback.message.answer(constants.WELCOME_MSG)
     try:
         QUESTIONS[step]
     except IndexError:
-        await callback.message.answer('Игра окончена!')
+        await callback.message.answer(constants.GAME_OVER_MSG)
         await state.clear()
         return
     await state.update_data(step=step)
@@ -86,7 +87,8 @@ async def enter_quiz(callback: types.CallbackQuery,
     await callback.answer()
 
 
-@router.message(F.text != '🚫 Выход', F.text != '🔙 Назад')
+@router.message(F.text != constants.CANCEL_QUIZ_BTN,
+                F.text != constants.EXIT_QUIZ_BTN)
 async def check_answer(message: types.Message,
                        state: FSMContext):
     data = await state.get_data()
@@ -108,7 +110,7 @@ async def check_answer(message: types.Message,
     )
 
 
-@router.message(F.text == '🚫 Выход')
+@router.message(F.text == constants.EXIT_QUIZ_BTN)
 async def exit_game(message: types.Message,
                     state: FSMContext):
     data = await state.get_data()
@@ -118,10 +120,10 @@ async def exit_game(message: types.Message,
     await message.answer(**content.as_kwargs(),
                          reply_markup=ReplyKeyboardRemove())
     await state.set_data({})
-    await message.answer('Пока!')
+    await message.answer(constants.GOOD_JOB_MSG)
 
 
-@router.message(F.text == '🔙 Назад')
+@router.message(F.text == constants.CANCEL_QUIZ_BTN)
 async def back_step(message: types.Message,
                     state: FSMContext):
     data = await state.get_data()
