@@ -94,20 +94,22 @@ async def check_answer(message: types.Message,
     data = await state.get_data()
     step = data['step']
     answers = data.get('answers', {})
-    if step == len(QUESTIONS) - 1:
-        content = make_summary(answers)
-        await message.answer(**content.as_kwargs(),
-                             reply_markup=ReplyKeyboardRemove())
-        await state.clear()
     answers[step] = message.text
     await state.update_data(answers=answers)
     await state.update_data(step=step + 1)
     logging.info(answers)
     step = step + 1
-    await message.answer(
-        QUESTIONS[step].text,
-        reply_markup=build_answers_kb(step).as_markup(resize_keyboard=True)
-    )
+    if step == len(QUESTIONS):
+        content = make_summary(answers)
+        await message.answer('hey')
+        await message.answer(**content.as_kwargs(),
+                             reply_markup=ReplyKeyboardRemove())
+        await state.clear()
+    else:
+        await message.answer(
+            QUESTIONS[step].text,
+            reply_markup=build_answers_kb(step).as_markup(resize_keyboard=True)
+        )
 
 
 @router.message(F.text == constants.EXIT_QUIZ_BTN)
