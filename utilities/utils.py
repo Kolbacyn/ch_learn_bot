@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
 from scrapy_hsk.models import Base, Word
-from utilities.dataclass import Answer, Question
+from utilities.dataclass import Answer, FlashCard, Question
 
 
 engine = create_engine('sqlite:///sqlite.db', echo=False)
@@ -36,6 +36,17 @@ def generate_question():
                        k=4),
     )
     return question
+
+
+def generate_flashcard():
+    word = get_word_from_database()
+    hanzi = word.word
+    translation = word.rus_translation
+    flashcard = FlashCard(
+        front_side=hanzi,
+        back_side=translation,
+    )
+    return flashcard
 
 
 class AttemptsQuantity(Enum):
