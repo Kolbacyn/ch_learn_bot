@@ -1,7 +1,9 @@
+import io
 from random import choice, sample
 from enum import Enum
 
 from aiogram.filters.callback_data import CallbackData
+from PIL import Image, ImageDraw, ImageFont
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
@@ -47,6 +49,35 @@ def generate_flashcard():
         back_side=translation,
     )
     return flashcard
+
+
+def create_image(text):
+    width, height = 800, 400
+    image = Image.new('RGB', (width, height), 'white')
+
+    # Создаем объект для рисования
+    draw = ImageDraw.Draw(image)
+
+    # Определяем шрифт и размер текста
+    font_size = 40
+    font = ImageFont.load_default()  # Можно использовать свой шрифт
+
+    # Получаем размеры текста
+    text_width, text_height = draw.text(text=text, font=font)
+
+    # Вычисляем позицию текста (по центру)
+    x = (width - text_width) / 2
+    y = (height - text_height) / 2
+
+    # Рисуем текст на изображении
+    draw.text((x, y), text, fill='black', font=font)
+
+    # Сохраняем изображение в байтовый поток
+    byte_io = io.BytesIO()
+    image.save(byte_io, 'PNG')
+    byte_io.seek(0)  # Возвращаемся к началу потока
+
+    return byte_io
 
 
 class AttemptsQuantity(Enum):

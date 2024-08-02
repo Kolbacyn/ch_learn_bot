@@ -1,3 +1,4 @@
+import asyncio
 import logging
 
 from aiogram import types, html, F, Router
@@ -79,6 +80,14 @@ async def enter_quiz(callback: types.CallbackQuery,
         await state.clear()
         return
     await state.update_data(step=step)
+    await callback.message.answer(
+        text=constants.QUIZ_RULES
+    )
+    await asyncio.sleep(7)
+    await callback.message.answer(
+        'Приступим!'
+    )
+    await asyncio.sleep(1)
     await callback.message.answer(
         QUESTIONS[step].text,
         reply_markup=build_answers_kb(step).as_markup(resize_keyboard=True)

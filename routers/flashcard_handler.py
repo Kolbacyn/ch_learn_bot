@@ -1,3 +1,4 @@
+import asyncio
 import logging
 
 from aiogram import types, F, Router
@@ -32,6 +33,10 @@ def build_flashcards_kb(step):
     return kb
 
 
+def make_summary(correct_answers: int, wrong_answers: int):
+    return f'Верных ответов: {correct_answers}\nНеверных ответов: {wrong_answers}'
+
+
 @router.callback_query(F.data == 'main_menu_btn_2')
 async def enter_flashcards(callback: types.CallbackQuery,
                            state: FSMContext,
@@ -46,6 +51,14 @@ async def enter_flashcards(callback: types.CallbackQuery,
         return
     await state.update_data(step=step)
     logging.info(FLASHCARDS[step].front_side)
+    await callback.message.answer(
+        text=constants.FLASHCARDS_RULES
+    )
+    await asyncio.sleep(7)
+    await callback.message.answer(
+        'Приступим!'
+    )
+    await asyncio.sleep(1)
     await callback.message.answer(
         f'Flashcard # {step}',
         reply_markup=build_flashcards_kb(step)
@@ -67,9 +80,12 @@ async def correct_answer(callback: types.CallbackQuery,
                          state: FSMContext):
     data = await state.get_data()
     step = data.get('step') + 1
+    correct_answers = data.get('correct_answers', 0) + 1
+    await state.update_data(correct_answers=correct_answers)
     await callback.message.edit_text(f'flashcard # {step}',
                                      reply_markup=build_flashcards_kb(step))
     await state.update_data(step=step)
+    logging.info(correct_answers)
     await callback.answer()
 
 
@@ -78,15 +94,21 @@ async def wrong_answer(callback: types.CallbackQuery,
                        state: FSMContext):
     data = await state.get_data()
     step = data.get('step') + 1
+    wrong_answers = data.get('wrong_answers', 0) + 1
+    await state.update_data(wrong_answers=wrong_answers)
     await callback.message.edit_text(f'flashcard # {step}',
                                      reply_markup=build_flashcards_kb(step))
     await state.update_data(step=step)
+    logging.info(wrong_answers)
     await callback.answer()
 
 
 @router.callback_query(F.data == 'leave')
 async def leave(callback: types.CallbackQuery,
                 state: FSMContext):
-    await state.clear()
-    await callback.message.edit_text(text='constants.GAME_OVER_MSG',
+    data = await state.get_data()
+    correct_answers = data.get('correct_answers', 0)
+    wrong_answers = data.get('wrong_answers', 0)
+    content = make_summary(correct_answers, wrong_answers)
+    await callback.message.edit_text(text=content,
                                      reply_markup=build_main_menu_kb())
