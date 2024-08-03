@@ -3,12 +3,14 @@ import logging
 from os import getenv
 
 from aiogram import Bot, Dispatcher
-from aiogram.fsm.storage.memory import SimpleEventIsolation
+from aiogram.fsm.storage.memory import SimpleEventIsolation, MemoryStorage
 from dotenv import load_dotenv
 
 from routers import router as main_router
 
 logging.basicConfig(level=logging.INFO)
+
+storage = MemoryStorage()
 
 users: dict[int, dict[str, list]] = {}
 
@@ -35,7 +37,7 @@ dp = create_dispatcher()
 async def main():
     bot = Bot(token=getenv('BOT_TOKEN'))
     try:
-        await dp.start_polling(bot)
+        await dp.start_polling(bot, storage=storage)
     finally:
         bot.session.close()
 

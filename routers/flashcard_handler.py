@@ -7,12 +7,12 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from keyboards import build_main_menu_kb
 from utilities import constants
-from utilities.utils import generate_flashcard
+from utilities.utils import generate_flashcard, create_image
 
 
 router = Router(name=__name__)
 
-FLASHCARDS = [generate_flashcard() for _ in range(10)]
+FLASHCARDS = [generate_flashcard() for _ in range(100)]
 
 
 def build_flashcards_kb(step):
@@ -54,15 +54,16 @@ async def enter_flashcards(callback: types.CallbackQuery,
     await callback.message.answer(
         text=constants.FLASHCARDS_RULES
     )
-    await asyncio.sleep(7)
+    await asyncio.sleep(1)
     await callback.message.answer(
         'Приступим!'
     )
-    await asyncio.sleep(1)
-    await callback.message.answer(
-        f'Flashcard # {step}',
+    create_image(FLASHCARDS[step].front_side)
+    await callback.message.answer_photo(
+        photo=types.FSInputFile('biffer.png'),
         reply_markup=build_flashcards_kb(step)
     )
+    await asyncio.sleep(0.5)
     await callback.answer()
 
 
@@ -81,11 +82,13 @@ async def correct_answer(callback: types.CallbackQuery,
     data = await state.get_data()
     step = data.get('step') + 1
     correct_answers = data.get('correct_answers', 0) + 1
+    create_image(FLASHCARDS[step].front_side)
     await state.update_data(correct_answers=correct_answers)
-    await callback.message.edit_text(f'flashcard # {step}',
-                                     reply_markup=build_flashcards_kb(step))
+    await callback.message.edit_media(
+        types.InputMediaPhoto(media=types.FSInputFile('biffer.png')),
+        reply_markup=build_flashcards_kb(step)
+    )
     await state.update_data(step=step)
-    logging.info(correct_answers)
     await callback.answer()
 
 
@@ -95,11 +98,13 @@ async def wrong_answer(callback: types.CallbackQuery,
     data = await state.get_data()
     step = data.get('step') + 1
     wrong_answers = data.get('wrong_answers', 0) + 1
+    create_image(FLASHCARDS[step].front_side)
     await state.update_data(wrong_answers=wrong_answers)
-    await callback.message.edit_text(f'flashcard # {step}',
-                                     reply_markup=build_flashcards_kb(step))
+    await callback.message.edit_media(
+        types.InputMediaPhoto(media=types.FSInputFile('biffer.png')),
+        reply_markup=build_flashcards_kb(step)
+    )
     await state.update_data(step=step)
-    logging.info(wrong_answers)
     await callback.answer()
 
 
@@ -110,5 +115,8 @@ async def leave(callback: types.CallbackQuery,
     correct_answers = data.get('correct_answers', 0)
     wrong_answers = data.get('wrong_answers', 0)
     content = make_summary(correct_answers, wrong_answers)
-    await callback.message.edit_text(text=content,
-                                     reply_markup=build_main_menu_kb())
+    await callback.message.edit_media(
+        types.InputMediaPhoto(media=types.FSInputFile(constants.GREETING_PICTURE),
+                              caption=content),
+        reply_markup=build_main_menu_kb()
+        )

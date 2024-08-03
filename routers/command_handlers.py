@@ -46,12 +46,3 @@ async def cmd_cancel(message: types.Message,
     await message.answer(constants.CANCEL_MESSAGE)
     await state.clear()
     await message.answer('Начнем сначала!', reply_markup=build_hsk_kb())
-
-
-@router.message(Command('image'))
-async def cmd_image(message: types.Message):
-    text = "Привет, мир!"  # Вы можете изменить текст или получать его из сообщения
-    image_bytes = create_image(text)
-    
-    # Отправляем изображение пользователю
-    await message.answer_photo(photo=image_bytes)

@@ -52,32 +52,12 @@ def generate_flashcard():
 
 
 def create_image(text):
-    width, height = 800, 400
+    width, height = 200, 200
     image = Image.new('RGB', (width, height), 'white')
-
-    # Создаем объект для рисования
     draw = ImageDraw.Draw(image)
-
-    # Определяем шрифт и размер текста
-    font_size = 40
-    font = ImageFont.load_default()  # Можно использовать свой шрифт
-
-    # Получаем размеры текста
-    text_width, text_height = draw.text(text=text, font=font)
-
-    # Вычисляем позицию текста (по центру)
-    x = (width - text_width) / 2
-    y = (height - text_height) / 2
-
-    # Рисуем текст на изображении
-    draw.text((x, y), text, fill='black', font=font)
-
-    # Сохраняем изображение в байтовый поток
-    byte_io = io.BytesIO()
-    image.save(byte_io, 'PNG')
-    byte_io.seek(0)  # Возвращаемся к началу потока
-
-    return byte_io
+    font = ImageFont.truetype('Deng.ttf', size=62)
+    draw.text((20, 20), align='center', text=text, fill='black', font=font)
+    image.save('biffer.png', 'PNG')
 
 
 class AttemptsQuantity(Enum):
