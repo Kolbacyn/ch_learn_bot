@@ -72,7 +72,7 @@ async def show_back_side(callback: types.CallbackQuery,
                          state: FSMContext):
     data = await state.get_data()
     step = data.get('step')
-    await callback.message.answer(FLASHCARDS[step].back_side)
+    await callback.message.answer(FLASHCARDS[step].hint)
     await callback.answer()
 
 
@@ -85,7 +85,9 @@ async def correct_answer(callback: types.CallbackQuery,
     create_image(FLASHCARDS[step].front_side)
     await state.update_data(correct_answers=correct_answers)
     await callback.message.edit_media(
-        types.InputMediaPhoto(media=types.FSInputFile('biffer.png')),
+        types.InputMediaPhoto(
+            media=types.FSInputFile('biffer.png')
+            ),
         reply_markup=build_flashcards_kb(step)
     )
     await state.update_data(step=step)
@@ -101,7 +103,9 @@ async def wrong_answer(callback: types.CallbackQuery,
     create_image(FLASHCARDS[step].front_side)
     await state.update_data(wrong_answers=wrong_answers)
     await callback.message.edit_media(
-        types.InputMediaPhoto(media=types.FSInputFile('biffer.png')),
+        types.InputMediaPhoto(
+            media=types.FSInputFile('biffer.png')
+            ),
         reply_markup=build_flashcards_kb(step)
     )
     await state.update_data(step=step)
@@ -116,7 +120,9 @@ async def leave(callback: types.CallbackQuery,
     wrong_answers = data.get('wrong_answers', 0)
     content = make_summary(correct_answers, wrong_answers)
     await callback.message.edit_media(
-        types.InputMediaPhoto(media=types.FSInputFile(constants.GREETING_PICTURE),
-                              caption=content),
+        types.InputMediaPhoto(
+            media=types.FSInputFile(constants.GREETING_PICTURE),
+            caption=content
+            ),
         reply_markup=build_main_menu_kb()
         )

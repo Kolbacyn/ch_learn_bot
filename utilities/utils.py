@@ -43,20 +43,22 @@ def generate_question():
 def generate_flashcard():
     word = get_word_from_database()
     hanzi = word.word
+    transcription = word.transcription
     translation = word.rus_translation
     flashcard = FlashCard(
         front_side=hanzi,
         back_side=translation,
+        hint=transcription
     )
     return flashcard
 
 
 def create_image(text):
-    width, height = 200, 200
+    width, height = 300, 300
     image = Image.new('RGB', (width, height), 'white')
     draw = ImageDraw.Draw(image)
     font = ImageFont.truetype('Deng.ttf', size=62)
-    draw.text((20, 20), align='center', text=text, fill='black', font=font)
+    draw.text((150, 150), anchor='mm', text=text, fill='black', font=font)
     image.save('biffer.png', 'PNG')
 
 

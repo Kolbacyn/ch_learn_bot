@@ -25,3 +25,4 @@ class FlashCard:
     """"""
     front_side: str
     back_side: str
+    hint: str
