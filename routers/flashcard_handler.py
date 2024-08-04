@@ -72,8 +72,7 @@ async def show_back_side(callback: types.CallbackQuery,
                          state: FSMContext):
     data = await state.get_data()
     step = data.get('step')
-    await callback.message.answer(FLASHCARDS[step].hint)
-    await callback.answer()
+    await callback.answer(text=FLASHCARDS[step].hint)
 
 
 @router.callback_query(F.data == 'correct_answer')
