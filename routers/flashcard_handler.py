@@ -12,7 +12,7 @@ from utilities.utils import generate_flashcard, create_image
 
 router = Router(name=__name__)
 
-FLASHCARDS = [generate_flashcard() for _ in range(100)]
+FLASHCARDS = [generate_flashcard() for _ in range(10)]
 
 
 def build_flashcards_kb(step):
@@ -33,14 +33,15 @@ def build_flashcards_kb(step):
     return kb
 
 
-def make_summary(correct_answers: int, wrong_answers: int):
-    return f'Верных ответов: {correct_answers}\nНеверных ответов: {wrong_answers}'
+def make_summary(crct_answers: int, wrg_answers: int):
+    return f'Верных ответов: {crct_answers}\nНеверных ответов: {wrg_answers}'
 
 
 @router.callback_query(F.data == 'main_menu_btn_2')
 async def enter_flashcards(callback: types.CallbackQuery,
                            state: FSMContext,
                            step: int = 0):
+    await state.clear()
     if not step:
         await callback.message.answer(constants.WELCOME_MSG)
     try:
@@ -75,32 +76,25 @@ async def show_back_side(callback: types.CallbackQuery,
     await callback.answer(text=FLASHCARDS[step].hint)
 
 
-@router.callback_query(F.data == 'correct_answer')
-async def correct_answer(callback: types.CallbackQuery,
+@router.callback_query(F.data.in_(['correct_answer', 'wrong_answer']))
+async def process_answer(callback: types.CallbackQuery,
                          state: FSMContext):
     data = await state.get_data()
     step = data.get('step') + 1
-    correct_answers = data.get('correct_answers', 0) + 1
+    try:
+        FLASHCARDS[step]
+    except IndexError:
+        await callback.answer()
+        await callback.message.answer(constants.GAME_OVER_MSG)
+        await state.clear()
+        return
     create_image(FLASHCARDS[step].front_side)
-    await state.update_data(correct_answers=correct_answers)
-    await callback.message.edit_media(
-        types.InputMediaPhoto(
-            media=types.FSInputFile('biffer.png')
-            ),
-        reply_markup=build_flashcards_kb(step)
-    )
-    await state.update_data(step=step)
-    await callback.answer()
-
-
-@router.callback_query(F.data == 'wrong_answer')
-async def wrong_answer(callback: types.CallbackQuery,
-                       state: FSMContext):
-    data = await state.get_data()
-    step = data.get('step') + 1
-    wrong_answers = data.get('wrong_answers', 0) + 1
-    create_image(FLASHCARDS[step].front_side)
-    await state.update_data(wrong_answers=wrong_answers)
+    if callback.data == 'correct_answer':
+        correct_answers = data.get('correct_answers', 0) + 1
+        await state.update_data(correct_answers=correct_answers)
+    else:
+        wrong_answers = data.get('wrong_answers', 0) + 1
+        await state.update_data(wrong_answers=wrong_answers)
     await callback.message.edit_media(
         types.InputMediaPhoto(
             media=types.FSInputFile('biffer.png')
