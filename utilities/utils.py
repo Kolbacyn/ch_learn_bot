@@ -1,4 +1,3 @@
-import io
 from random import choice, sample
 from enum import Enum
 

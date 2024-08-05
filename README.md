@@ -22,14 +22,14 @@ Install dependencies from `requirements.txt`:
 pip install -r requirements.txt
 ```
 
-Create an empty `.env` file: and add bot token to it:
+Create an empty `.env` file and add bot token to it:
 
 ```bash
 BOT_TOKEN=1234567890:ABCDefghijklmnopqrstuvwxyz
 
 ```
 
-Run bot:
+Finally, run bot:
 
 ```bash
 python main.py
