@@ -12,7 +12,7 @@ from utilities.utils import generate_flashcard, create_image
 
 router = Router(name=__name__)
 
-FLASHCARDS = [generate_flashcard() for _ in range(10)]
+FLASHCARDS = [generate_flashcard() for _ in range(100)]
 
 
 def build_flashcards_kb(step):
@@ -76,7 +76,7 @@ async def show_back_side(callback: types.CallbackQuery,
     await callback.answer(text=FLASHCARDS[step].hint)
 
 
-@router.callback_query(F.data.in_(['correct_answer', 'wrong_answer']))
+@router.callback_query(F.data.in_(('correct_answer', 'wrong_answer')))
 async def process_answer(callback: types.CallbackQuery,
                          state: FSMContext):
     data = await state.get_data()
