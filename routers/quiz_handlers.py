@@ -13,6 +13,7 @@ from aiogram.utils.formatting import (
     as_section,
 )
 
+from keyboards import build_main_menu_kb
 from utilities import constants
 from utilities.utils import generate_question
 
@@ -111,7 +112,7 @@ async def check_answer(message: types.Message,
     if step == len(QUESTIONS):
         content = make_summary(answers)
         await message.answer(**content.as_kwargs(),
-                             reply_markup=ReplyKeyboardRemove())
+                             reply_markup=build_main_menu_kb())
         await state.clear()
     else:
         await message.answer(
