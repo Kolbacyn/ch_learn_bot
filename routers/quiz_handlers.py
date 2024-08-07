@@ -113,6 +113,10 @@ async def check_answer(message: types.Message,
         content = make_summary(answers)
         await message.answer(**content.as_kwargs(),
                              reply_markup=build_main_menu_kb())
+        await message.answer(
+            constants.GOOD_JOB_MSG,
+            reply_markup=ReplyKeyboardRemove()
+        )
         await state.clear()
     else:
         await message.answer(
@@ -129,9 +133,12 @@ async def exit_game(message: types.Message,
 
     content = make_summary(answers)
     await message.answer(**content.as_kwargs(),
-                         reply_markup=ReplyKeyboardRemove())
+                         reply_markup=build_main_menu_kb())
     await state.set_data({})
-    await message.answer(constants.GOOD_JOB_MSG)
+    await message.answer(
+        constants.GOOD_JOB_MSG,
+        reply_markup=ReplyKeyboardRemove()
+        )
 
 
 @router.message(F.text == constants.CANCEL_QUIZ_BTN)

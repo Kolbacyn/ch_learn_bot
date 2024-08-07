@@ -138,17 +138,15 @@ attempts_quantity_buttons = ReplyKeyboardMarkup(
     one_time_keyboard=True
 )
 
-# exit_to_menu_button = InlineKeyboardMarkup(inline_keyboard=[
-#     InlineKeyboardButton(
-#         text='В меню',
-#         callback_data='exit_to_menu'
-#     )
-# ])
 
-
-# def get_hsk_levels_keybord():
-#     keyboar_builder = InlineKeyboardBuilder()
-#     keyboar_builder.button(text='HSK1', callback_data='hsk_buttons_1')
-#     keyboar_builder.button(text='HSK2', callback_data='hsk_buttons_2')
-#     keyboar_builder.button(text='HSK3', callback_data='hsk_buttons_3')
-#     return keyboar_builder.as_markup()
+def build_language_kb() -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+    builder.button(
+        text='Русский',
+        callback_data='language_ru'
+    )
+    builder.button(
+        text='English',
+        callback_data='language_en'
+    )
+    return builder.as_markup()
