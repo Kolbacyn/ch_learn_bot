@@ -27,9 +27,10 @@ async def cmd_start(message: types.Message):
         'Меня зовут Ханью и я твой помощник в изучении китайского языка'
         )
     await asyncio.sleep(1)
-    logging.info(users)
-    await message.answer(constants.INTRODUCING_MSG)
     if not users[message.from_user.id].get('hsk_level'):
+        logging.info(users)
+        await message.answer(constants.INTRODUCING_MSG)
+        await asyncio.sleep(1)
         await message.answer(
             'Выбери уровень подготовки',
             reply_markup=build_hsk_kb()
