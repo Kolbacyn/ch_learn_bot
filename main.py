@@ -10,8 +10,6 @@ from routers import router as main_router
 
 logging.basicConfig(level=logging.INFO)
 
-users: dict[int, dict[str, list]] = {}
-
 
 def create_dispatcher():
     dispatcher = Dispatcher(

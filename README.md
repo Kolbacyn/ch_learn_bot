@@ -1,6 +1,6 @@
 Bot assisting in studying Chinese with Telegram
 
-![Telegram](https://telegram.org/img/t_logo.png)
+![Telegram](https://img.shields.io/badge/Telegram-blue?style=for-the-badge&logo=telegram)
 
 ## Quick start
 
