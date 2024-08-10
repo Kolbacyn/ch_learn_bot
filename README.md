@@ -1,6 +1,7 @@
 Bot assisting in studying Chinese with Telegram
 
 ![Telegram](https://img.shields.io/badge/Telegram-blue?style=for-the-badge&logo=telegram)
+[![Scrapy](https://img.shields.io/badge/scrapy-%14fa1c.svg?style=for-the-badge&logo=scrapy&logoColor=white)](https://scrapy.org/)
 
 ## Quick start
 
