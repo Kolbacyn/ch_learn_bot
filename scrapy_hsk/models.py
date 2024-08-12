@@ -4,9 +4,12 @@ from sqlalchemy.orm import declared_attr
 
 
 class Base:
+    """Base class for SQLAlchemy models."""
+    __abstract__ = True
 
     @declared_attr
-    def __tablename__(self, cls):
+    def __tablename__(cls):
+        """Returns table name from class name."""
         return cls.__name__.lower()
 
     id = Column(Integer, primary_key=True)

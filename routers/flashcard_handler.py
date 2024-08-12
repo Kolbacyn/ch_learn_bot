@@ -16,21 +16,16 @@ FLASHCARDS = [generate_flashcard() for _ in range(100)]
 
 def build_flashcards_kb(step):
     """Adds buttons to the keyboard"""
-    first_button = InlineKeyboardButton(text=FLASHCARDS[step].front_side,
-                                        callback_data='front_side')
-    second_button = InlineKeyboardButton(text='✅',
-                                         callback_data='correct_answer')
-    third_button = InlineKeyboardButton(text='❌',
-                                        callback_data='wrong_answer')
-    fourth_button = InlineKeyboardButton(text='Выйти', callback_data='leave')
-    kb = InlineKeyboardMarkup(
-        inline_keyboard=[
-            [first_button],
-            [second_button, third_button],
-            [fourth_button]
-        ]
-    )
-    return kb
+    inline_keyboard = []
+    inline_keyboard.append([InlineKeyboardButton(
+        text=FLASHCARDS[step].front_side,
+        callback_data='front_side')])
+    inline_keyboard.append([
+        InlineKeyboardButton(text='✅', callback_data='correct_answer'),
+        InlineKeyboardButton(text='❌', callback_data='wrong_answer')])
+    inline_keyboard.append([InlineKeyboardButton(
+        text='Выйти', callback_data='leave')])
+    return InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
 
 
 def make_summary(crct_answers: int, wrg_answers: int):
