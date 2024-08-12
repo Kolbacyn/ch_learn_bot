@@ -1,5 +1,5 @@
-from random import choice, sample
 from enum import Enum
+from random import choice, sample
 
 from aiogram.filters.callback_data import CallbackData
 from PIL import Image, ImageDraw, ImageFont
@@ -16,11 +16,13 @@ session = Session(engine)
 
 
 def get_word_from_database():
+    """Get word from database"""
     word = choice(session.query(Word).all())
     return word
 
 
 def generate_question():
+    """Generate question"""
     words = [get_word_from_database() for i in range(4)]
     hanzi = words[0].word
     text = f'Переведите на русский язык: {hanzi}'
@@ -40,6 +42,7 @@ def generate_question():
 
 
 def generate_flashcard():
+    """Generate flashcard"""
     word = get_word_from_database()
     hanzi = word.word
     transcription = word.transcription
@@ -53,6 +56,7 @@ def generate_flashcard():
 
 
 def create_image(text):
+    """Create image"""
     width, height = 300, 300
     image = Image.new('RGB', (width, height), 'white')
     draw = ImageDraw.Draw(image)

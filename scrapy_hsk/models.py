@@ -16,6 +16,7 @@ Base = declarative_base(cls=Base)
 
 
 class Word(Base):
+    """Model for word"""
     word = Column(String)
     transcription = Column(String)
     rus_translation = Column(String)

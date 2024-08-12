@@ -16,13 +16,6 @@ def create_dispatcher():
         events_isolation=SimpleEventIsolation()
     )
     dispatcher.include_router(main_router)
-    # dispatcher.include_router(quiz_router)
-    # dispatcher.include_router(handlers.router)
-    # scene_registry = SceneRegistry(dispatcher)
-    # ... and then register a scene in the registry
-    # by default, Scene will be mounted to the router that passed to the SceneRegistry,
-    # but you can specify the router explicitly using the `router` argument
-    # scene_registry.add(QuizScene)
     return dispatcher
 
 

@@ -1,14 +1,13 @@
 import asyncio
 import logging
 
-from aiogram import types, F, Router
+from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from keyboards import build_main_menu_kb
 from utilities import constants
-from utilities.utils import generate_flashcard, create_image
-
+from utilities.utils import create_image, generate_flashcard
 
 router = Router(name=__name__)
 
@@ -16,6 +15,7 @@ FLASHCARDS = [generate_flashcard() for _ in range(100)]
 
 
 def build_flashcards_kb(step):
+    """Adds buttons to the keyboard"""
     first_button = InlineKeyboardButton(text=FLASHCARDS[step].front_side,
                                         callback_data='front_side')
     second_button = InlineKeyboardButton(text='✅',
@@ -34,6 +34,7 @@ def build_flashcards_kb(step):
 
 
 def make_summary(crct_answers: int, wrg_answers: int):
+    """Creates a summary of correct and wrong answers"""
     return f'Верных ответов: {crct_answers}\nНеверных ответов: {wrg_answers}'
 
 
@@ -41,6 +42,7 @@ def make_summary(crct_answers: int, wrg_answers: int):
 async def enter_flashcards(callback: types.CallbackQuery,
                            state: FSMContext,
                            step: int = 0):
+    """Starts the flashcards interaction"""
     await state.clear()
     if not step:
         await callback.message.answer(constants.WELCOME_MSG)
@@ -71,6 +73,7 @@ async def enter_flashcards(callback: types.CallbackQuery,
 @router.callback_query(F.data == 'front_side')
 async def show_back_side(callback: types.CallbackQuery,
                          state: FSMContext):
+    """Shows the back side of the flashcard"""
     data = await state.get_data()
     step = data.get('step')
     await callback.answer(text=FLASHCARDS[step].hint)
@@ -79,6 +82,7 @@ async def show_back_side(callback: types.CallbackQuery,
 @router.callback_query(F.data.in_(('correct_answer', 'wrong_answer')))
 async def process_answer(callback: types.CallbackQuery,
                          state: FSMContext):
+    """Processes the answer"""
     data = await state.get_data()
     step = data.get('step') + 1
     try:
@@ -108,6 +112,7 @@ async def process_answer(callback: types.CallbackQuery,
 @router.callback_query(F.data == 'leave')
 async def leave(callback: types.CallbackQuery,
                 state: FSMContext):
+    """Abrupts the flashcardsinteraction"""
     data = await state.get_data()
     correct_answers = data.get('correct_answers', 0)
     wrong_answers = data.get('wrong_answers', 0)
