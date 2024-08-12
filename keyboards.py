@@ -1,6 +1,7 @@
-from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
-                           ReplyKeyboardMarkup, KeyboardButton)
+from aiogram.types import (InlineKeyboardMarkup, KeyboardButton,
+                           ReplyKeyboardMarkup)
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+
 from utilities.utils import AttemptsCallback, AttemptsQuantity
 
 
@@ -75,36 +76,36 @@ def build_attempts_kb() -> InlineKeyboardMarkup:
 
 
 def build_attempts_kb2() -> ReplyKeyboardMarkup:
-    attempts_kb = ReplyKeyboardMarkup(
-        keyboard=[
-            [KeyboardButton(
-                text='10 попыток',
-                callback_data=AttemptsCallback(
-                    quantity=AttemptsQuantity.ten
-                ).pack()
-            ),
-             KeyboardButton(
-                text='20 попыток',
-                callback_data=AttemptsCallback(
-                    quantity=AttemptsQuantity.twenty
-                ).pack()
-            ),
-             KeyboardButton(
-                text='50 попыток',
-                callback_data=AttemptsCallback(
-                    quantity=AttemptsQuantity.fifty
-                ).pack()
-            ),
-             KeyboardButton(
-                text='100 попыток',
-                callback_data=AttemptsCallback(
-                    quantity=AttemptsQuantity.hundred
-                ).pack()
-            )],
-        ],
+    keyboard = [[
+        KeyboardButton(
+            text='10 попыток',
+            callback_data=AttemptsCallback(
+                quantity=AttemptsQuantity.ten.value
+            ).pack()
+        ),
+        KeyboardButton(
+            text='20 попыток',
+            callback_data=AttemptsCallback(
+                quantity=AttemptsQuantity.twenty.value
+            ).pack()
+        ),
+        KeyboardButton(
+            text='50 попыток',
+            callback_data=AttemptsCallback(
+                quantity=AttemptsQuantity.fifty.value
+            ).pack()
+        ),
+        KeyboardButton(
+            text='100 попыток',
+            callback_data=AttemptsCallback(
+                quantity=AttemptsQuantity.hundred.value
+            ).pack()
+        ),
+    ]]
+    return ReplyKeyboardMarkup(
+        keyboard=keyboard,
         resize_keyboard=True,
     )
-    return attempts_kb
 
 
 attempts_quantity_buttons = ReplyKeyboardMarkup(

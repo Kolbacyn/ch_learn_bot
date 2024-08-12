@@ -1,17 +1,12 @@
 import asyncio
 import logging
 
-from aiogram import types, html, F, Router
+from aiogram import F, Router, html, types
 from aiogram.fsm.context import FSMContext
 from aiogram.types import KeyboardButton, ReplyKeyboardRemove
+from aiogram.utils.formatting import (Bold, as_key_value, as_list,
+                                      as_numbered_list, as_section)
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
-from aiogram.utils.formatting import (
-    Bold,
-    as_key_value,
-    as_list,
-    as_numbered_list,
-    as_section,
-)
 
 from keyboards import build_main_menu_kb
 from utilities import constants
@@ -23,6 +18,7 @@ QUESTIONS = [generate_question() for _ in range(10)]
 
 
 def build_answers_kb(step: int):
+    """Creates the answers keyboard"""
     kb = ReplyKeyboardBuilder()
     answers = QUESTIONS[step].answers
     kb.add(*[KeyboardButton(text=answer.text) for answer in answers])
@@ -34,6 +30,7 @@ def build_answers_kb(step: int):
 
 
 def make_summary(answers: dict):
+    """Creates a summary of correct and wrong answers"""
     correct = 0
     incorrect = 0
     user_answers = []
@@ -50,7 +47,7 @@ def make_summary(answers: dict):
             answer = 'нет ответа'
         user_answers.append(f'{quiz.text} ({icon} {html.quote(answer)})')
 
-    content = as_list(
+    return as_list(
         as_section(
             Bold('Ваши ответы:'),
             as_numbered_list(*user_answers),
@@ -64,7 +61,6 @@ def make_summary(answers: dict):
             ),
         ),
     )
-    return content
 
 
 @router.callback_query(F.data == 'main_menu_btn_1')
@@ -72,6 +68,7 @@ async def enter_quiz(callback: types.CallbackQuery,
                      state: FSMContext,
                      step: int = 0
                      ):
+    """Starts the quiz"""
     if not step:
         await callback.message.answer(constants.WELCOME_MSG)
     try:
@@ -101,6 +98,7 @@ async def enter_quiz(callback: types.CallbackQuery,
                 F.text != constants.EXIT_QUIZ_BTN)
 async def check_answer(message: types.Message,
                        state: FSMContext):
+    """Checks if the user's answer is correct"""
     data = await state.get_data()
     step = data['step']
     answers = data.get('answers', {})
@@ -128,6 +126,7 @@ async def check_answer(message: types.Message,
 @router.message(F.text == constants.EXIT_QUIZ_BTN)
 async def exit_game(message: types.Message,
                     state: FSMContext):
+    """Exits the quiz"""
     data = await state.get_data()
     answers = data.get('answers', {})
 
@@ -144,6 +143,7 @@ async def exit_game(message: types.Message,
 @router.message(F.text == constants.CANCEL_QUIZ_BTN)
 async def back_step(message: types.Message,
                     state: FSMContext):
+    """Returns to previous step"""
     data = await state.get_data()
     step = data.get('step')
     step -= 1

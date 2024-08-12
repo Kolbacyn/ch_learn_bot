@@ -1,12 +1,11 @@
 import logging
 
-from aiogram import types, F, Router
+from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
 
-from routers.command_handlers import users
-from keyboards import build_main_menu_kb, build_language_kb
 import utilities.constants as constants
-
+from keyboards import build_language_kb, build_main_menu_kb
+from routers.command_handlers import users
 
 router = Router(name=__name__)
 
@@ -14,6 +13,7 @@ router = Router(name=__name__)
 @router.callback_query(F.data.startswith('hsk_buttons_'))
 async def hsk_level(callback: types.CallbackQuery,
                     state: FSMContext):
+    """Checks the HSK level"""
     await state.clear()
     data = await state.get_data()
     if not users[callback.from_user.id]:
@@ -31,6 +31,7 @@ async def hsk_level(callback: types.CallbackQuery,
 @router.callback_query(F.data.startswith('language_'))
 async def language(callback: types.CallbackQuery,
                    state: FSMContext):
+    """Checks the language"""
     data = await state.get_data()
     logging.info(data)
     if not users[callback.from_user.id]:

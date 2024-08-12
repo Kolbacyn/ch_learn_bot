@@ -1,5 +1,5 @@
-from random import choice, sample
 from enum import Enum
+from random import choice, sample
 
 from aiogram.filters.callback_data import CallbackData
 from PIL import Image, ImageDraw, ImageFont
@@ -9,50 +9,45 @@ from sqlalchemy.orm import Session
 from scrapy_hsk.models import Base, Word
 from utilities.dataclass import Answer, FlashCard, Question
 
-
 engine = create_engine('sqlite:///sqlite.db', echo=False)
 Base.metadata.create_all(engine)
 session = Session(engine)
 
 
 def get_word_from_database():
-    word = choice(session.query(Word).all())
-    return word
+    """Get word from database"""
+    return choice(session.query(Word).all())
 
 
 def generate_question():
-    words = [get_word_from_database() for i in range(4)]
-    hanzi = words[0].word
-    text = f'Переведите на русский язык: {hanzi}'
-    translation = words[0].rus_translation
-    ans_one = words[1]
-    ans_two = words[2]
-    ans_three = words[3]
-    question = Question(
-        text=text,
-        answers=sample([Answer(translation, is_correct=True),
-                        Answer(ans_one.rus_translation),
-                        Answer(ans_two.rus_translation),
-                        Answer(ans_three.rus_translation)],
-                       k=4),
-    )
-    return question
+    """
+    Generate a question with a random word from the database and three options.
+
+    Returns:
+        Question: A question object with a prompt and four answer options.
+    """
+    words = [get_word_from_database() for _ in range(4)]
+    prompt = f'Переведите на русский язык: {words[0].word}'
+    correct_answer = Answer(words[0].rus_translation, is_correct=True)
+    incorrect_answers = [
+        Answer(word.rus_translation) for word in words[1:]
+    ]
+    answer_options = sample(incorrect_answers + [correct_answer], k=4)
+    return Question(text=prompt, answers=answer_options)
 
 
 def generate_flashcard():
+    """Generate flashcard"""
     word = get_word_from_database()
-    hanzi = word.word
-    transcription = word.transcription
-    translation = word.rus_translation
-    flashcard = FlashCard(
-        front_side=hanzi,
-        back_side=translation,
-        hint=transcription
+    return FlashCard(
+        front_side=word.word,
+        back_side=word.rus_translation,
+        hint=word.transcription
     )
-    return flashcard
 
 
 def create_image(text):
+    """Create image"""
     width, height = 300, 300
     image = Image.new('RGB', (width, height), 'white')
     draw = ImageDraw.Draw(image)
