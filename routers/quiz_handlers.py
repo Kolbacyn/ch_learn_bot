@@ -47,7 +47,7 @@ def make_summary(answers: dict):
             answer = 'нет ответа'
         user_answers.append(f'{quiz.text} ({icon} {html.quote(answer)})')
 
-    content = as_list(
+    return as_list(
         as_section(
             Bold('Ваши ответы:'),
             as_numbered_list(*user_answers),
@@ -61,7 +61,6 @@ def make_summary(answers: dict):
             ),
         ),
     )
-    return content
 
 
 @router.callback_query(F.data == 'main_menu_btn_1')

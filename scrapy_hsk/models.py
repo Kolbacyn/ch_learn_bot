@@ -5,7 +5,10 @@ from sqlalchemy.orm import declared_attr
 
 class Base:
     """Base class for SQLAlchemy models."""
+
     __abstract__ = True
+
+    id = Column(Integer, primary_key=True)
 
     @declared_attr
     def __tablename__(cls):
