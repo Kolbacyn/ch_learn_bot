@@ -6,7 +6,7 @@ from sqlalchemy.orm import declared_attr
 class Base:
 
     @declared_attr
-    def __tablename__(cls):
+    def __tablename__(self, cls):
         return cls.__name__.lower()
 
     id = Column(Integer, primary_key=True)

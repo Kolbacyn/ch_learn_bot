@@ -1,16 +1,11 @@
 import asyncio
 import logging
 
-from aiogram import F, html, Router, types
+from aiogram import F, Router, html, types
 from aiogram.fsm.context import FSMContext
 from aiogram.types import KeyboardButton, ReplyKeyboardRemove
-from aiogram.utils.formatting import (
-    Bold,
-    as_key_value,
-    as_list,
-    as_numbered_list,
-    as_section,
-)
+from aiogram.utils.formatting import (Bold, as_key_value, as_list,
+                                      as_numbered_list, as_section)
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 from keyboards import build_main_menu_kb

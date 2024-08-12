@@ -14,7 +14,9 @@ class WordToDBPipeline:
         self.session = Session(engine)
 
     def process_item(self, item, spider):
-        existing_word = self.session.query(Word).filter_by(word=item['word']).first()
+        existing_word = self.session.query(Word).filter_by(
+            word=item['word']
+            ).first()
         if existing_word:
             raise DropItem(
                 f'Word "{item["word"]}" already exists in the database.'
