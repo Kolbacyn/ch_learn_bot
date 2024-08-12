@@ -11,7 +11,7 @@ class HskThreeWordsSpider(scrapy.Spider):
 
     def parse(self, response):
         for word in response.css('tbody tr'):
-            data ={
+            data = {
                 'word': word.css('tr td.column-1::text').get(),
                 'transcription': word.css('tr td.column-2::text').get(),
                 'rus_translation': word.css('tr td.column-3::text').get(),

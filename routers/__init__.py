@@ -7,7 +7,6 @@ from .flashcard_handler import router as flashcard_router
 from .quiz_handlers import router as act_router
 from .user_settings_routers import router as settings_router
 
-
 router = Router(name=__name__)
 
 router.include_router(cmd_router)

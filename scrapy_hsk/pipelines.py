@@ -1,7 +1,7 @@
 from scrapy.exceptions import DropItem
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 
 from scrapy_hsk.models import Base, Word
 
@@ -19,8 +19,6 @@ class WordToDBPipeline:
             raise DropItem(
                 f'Word "{item["word"]}" already exists in the database.'
                 )
-
-        # Если слово не найдено, добавляем его в базу
         word = Word(
             word=item['word'],
             transcription=item['transcription'],
@@ -31,7 +29,7 @@ class WordToDBPipeline:
         try:
             self.session.commit()
         except IntegrityError:
-            self.session.rollback()  # В случае ошибки откатываем транзакцию
+            self.session.rollback()
             raise DropItem(
                 f'Failed to add word "{item["word"]}" due to integrity error.'
                 )

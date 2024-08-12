@@ -9,7 +9,6 @@ from sqlalchemy.orm import Session
 from scrapy_hsk.models import Base, Word
 from utilities.dataclass import Answer, FlashCard, Question
 
-
 engine = create_engine('sqlite:///sqlite.db', echo=False)
 Base.metadata.create_all(engine)
 session = Session(engine)
