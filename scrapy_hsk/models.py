@@ -1,9 +1,8 @@
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import declared_attr
+from sqlalchemy.ext.declarative import declarative_base, declared_attr
 
 
-class Base:
+class BaseModel:
     """Base class for SQLAlchemy models."""
 
     __abstract__ = True
@@ -18,7 +17,7 @@ class Base:
     id = Column(Integer, primary_key=True)
 
 
-Base = declarative_base(cls=Base)
+Base = declarative_base(cls=BaseModel)
 
 
 class Word(Base):
