@@ -45,11 +45,11 @@ def make_summary(answers: dict):
             icon = '❌'
         if answer is None:
             answer = 'нет ответа'
-        user_answers.append(f'{quiz.text} ({icon} {html.quote(answer)})')
+        user_answers.append(f'{icon} (Ваш ответ: {html.quote(answer)})')
 
     return as_list(
         as_section(
-            Bold('Ваши ответы:'),
+            Bold('Результаты:'),
             as_numbered_list(*user_answers),
         ),
         '',
