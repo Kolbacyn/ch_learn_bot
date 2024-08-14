@@ -12,6 +12,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 def create_dispatcher():
+    """Creates the dispatcher"""
     dispatcher = Dispatcher(
         events_isolation=SimpleEventIsolation()
     )
@@ -24,6 +25,7 @@ dp = create_dispatcher()
 
 
 async def main():
+    """Starts the bot"""
     bot = Bot(token=getenv('BOT_TOKEN'))
     try:
         await dp.start_polling(bot)
