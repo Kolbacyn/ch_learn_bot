@@ -15,6 +15,10 @@ def build_main_menu_kb() -> InlineKeyboardMarkup:
         text='Карточки',
         callback_data='main_menu_btn_2'
     )
+    builder.button(
+        text='Конструктор',
+        callback_data='main_menu_btn_3'
+    )
     return builder.as_markup()
 
 

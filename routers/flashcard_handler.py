@@ -11,7 +11,7 @@ from utilities.utils import create_image, generate_flashcard
 
 router = Router(name=__name__)
 
-FLASHCARDS = [generate_flashcard() for _ in range(100)]
+FLASHCARDS = [generate_flashcard() for _ in range(5)]
 
 
 def build_flashcards_kb(step):
