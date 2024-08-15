@@ -4,6 +4,7 @@ from scrapy_hsk.items import WordItem
 
 
 class HskOneWordsSpider(scrapy.Spider):
+    """Scrapy spider for HSK 1 level words"""
     name = "hsk_one_words"
     allowed_domains = ["myhsk.org"]
     start_urls = ["https://myhsk.org/hsk-1-slova-online/"]

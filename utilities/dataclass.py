@@ -18,3 +18,11 @@ class Question:
     def __post_init__(self):
         self.correct_answer = next(answer.text for answer in self.answers
                                    if answer.is_correct)
+
+
+@dataclass
+class FlashCard:
+    """"""
+    front_side: str
+    back_side: str
+    hint: str
