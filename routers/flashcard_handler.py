@@ -54,7 +54,7 @@ async def enter_flashcards(callback: types.CallbackQuery,
     )
     await asyncio.sleep(1)
     await callback.message.answer(
-        'Приступим!'
+        constants.START_TRAINING_MESSAGE
     )
     create_image(FLASHCARDS[step].front_side)
     await callback.message.answer_photo(
@@ -96,7 +96,7 @@ async def process_answer(callback: types.CallbackQuery,
         await state.update_data(wrong_answers=wrong_answers)
     await callback.message.edit_media(
         types.InputMediaPhoto(
-            media=types.FSInputFile('biffer.png')
+            media=types.FSInputFile(constants.FLASHCARD_PICTURE)
             ),
         reply_markup=build_flashcards_kb(step)
     )

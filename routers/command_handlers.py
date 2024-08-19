@@ -25,7 +25,7 @@ async def cmd_start(message: types.Message):
         )
     await asyncio.sleep(1)
     await message.answer(
-        'Меня зовут Ханью и я твой помощник в изучении китайского языка'
+        constants.GREETING_MESSAGE
         )
     await asyncio.sleep(1)
     if not users[message.from_user.id].get('hsk_level'):
@@ -33,12 +33,12 @@ async def cmd_start(message: types.Message):
         await message.answer(constants.INTRODUCING_MSG)
         await asyncio.sleep(1)
         await message.answer(
-            'Выбери уровень подготовки',
+            constants.CHOOSE_HSK_LEVEL_MSG,
             reply_markup=build_hsk_kb()
             )
     else:
         await message.answer(
-            'Приступим!',
+            constants.LETS_START_MESSAGE,
             reply_markup=build_main_menu_kb()
             )
 
@@ -47,10 +47,10 @@ async def cmd_start(message: types.Message):
 async def cmd_help(message: types.Message):
     """Processing help command"""
     await message.answer(
-        'Это бот-помощник в изучении китайского языка.'
+        constants.HELP_MESSAGE
         )
     await message.answer(
-        'Для начала тренировки отправьте /start и выберите уровень подготовки.'
+        constants.INSTRUCTIONS_MESSAGE
         )
 
 
@@ -60,4 +60,7 @@ async def cmd_cancel(message: types.Message,
     """Processing cancel command"""
     await message.answer(constants.CANCEL_MESSAGE)
     await state.clear()
-    await message.answer('Начнем сначала!', reply_markup=build_hsk_kb())
+    await message.answer(
+        constants.STARTOVER_MESSAGE,
+        reply_markup=build_hsk_kb()
+        )

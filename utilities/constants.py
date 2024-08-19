@@ -1,11 +1,18 @@
 # Pictures:
 GREETING_PICTURE = 'hey_pic.png'
+FLASHCARD_PICTURE = 'biffer.png'
 
 # Messages:
 CANCEL_MESSAGE = 'Тренировка отменена'
+GREETING_MESSAGE = 'Меня зовут Ханью, я твой помощник в изучении китайского'
+CHOOSE_HSK_LEVEL_MSG = 'Выбери уровень подготовки'
 INTRODUCING_MSG = 'Для начала давай определимся с некоторыми моментами!'
-START_TRAINING_MESSAGE = 'Приступим к тренировке!'
+START_TRAINING_MESSAGE = 'Приступим!'
+LETS_START_MESSAGE = 'Ну что же, приступим!'
+HELP_MESSAGE = 'Это бот-помощник в изучении китайского языка.'
+INSTRUCTIONS_MESSAGE = 'Чтобы начать отправьте /start.'
 WELCOME_MSG = 'Добро пожаловать в игру!'
+STARTOVER_MESSAGE = 'Начнем сначала!'
 CHOOSE_LANGUAGE_MSG = 'Выбери язык, на котором будет удобно общаться'
 CHOOSE_ANSWER_MSG = 'Пожалуйста, выберите ответ.'
 GOOD_JOB_MSG = 'Отлично! Тренировка окончена.'
