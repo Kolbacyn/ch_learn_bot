@@ -83,7 +83,7 @@ async def enter_quiz(callback: types.CallbackQuery,
     )
     await asyncio.sleep(5)
     await callback.message.answer(
-        'Приступим!'
+        constants.START_TRAINING_MESSAGE
     )
     await asyncio.sleep(0.3)
     await callback.message.answer(
