@@ -40,3 +40,8 @@ class WordToDBPipeline:
 
     def close_spider(self, spider):
         self.session.close()
+
+
+class SentencePipepine:
+    def process_item(self, item, spider):
+        return item
