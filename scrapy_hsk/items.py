@@ -14,3 +14,10 @@ class SentenceItem(scrapy.Item):
     sentence = scrapy.Field()
     translation = scrapy.Field()
     level = scrapy.Field()
+
+
+class QuoteItem(scrapy.Item):
+    """QuoteItem class for storing quote data in the database."""
+    text = scrapy.Field()
+    author = scrapy.Field()
+    tags = scrapy.Field()
