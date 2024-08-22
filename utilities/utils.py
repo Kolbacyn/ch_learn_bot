@@ -6,7 +6,7 @@ from PIL import Image, ImageDraw, ImageFont
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from scrapy_hsk.models import Base, Word
+from scrapy_hsk.models import Base, Sentence, Word
 from utilities.dataclass import Answer, FlashCard, Question
 
 engine = create_engine('sqlite:///sqlite.db', echo=False)
@@ -17,6 +17,14 @@ session = Session(engine)
 def get_word_from_database():
     """Get word from database"""
     return choice(session.query(Word).all())
+
+
+def get_sentence_from_database():
+    """Get sentence from database"""
+    sent_engine = create_engine('sqlite:///sqlite_sentences.db', echo=False)
+    Base.metadata.create_all(sent_engine)
+    sent_session = Session(sent_engine)
+    return choice(sent_session.query(Sentence).all())
 
 
 def generate_question():
