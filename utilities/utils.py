@@ -1,5 +1,5 @@
 from enum import Enum
-from random import choice, sample
+from random import choice, sample, shuffle
 
 from aiogram.filters.callback_data import CallbackData
 from PIL import Image, ImageDraw, ImageFont
@@ -25,6 +25,17 @@ def get_sentence_from_database():
     Base.metadata.create_all(sent_engine)
     sent_session = Session(sent_engine)
     return choice(sent_session.query(Sentence).all())
+
+
+def generate_sep_sentence():
+    """Generate separated sentence"""
+    sentence = get_sentence_from_database()
+    parts = list(sentence.sentence.split(' '))
+    shuffle(parts)
+    sentence_for_construct = {}
+    sentence_for_construct[sentence.sentence] = parts
+    print(sentence_for_construct)
+    return sentence_for_construct
 
 
 def generate_question():
