@@ -34,6 +34,7 @@ def generate_sep_sentence():
     shuffle(parts)
     sentence_for_construct = {}
     sentence_for_construct[sentence.sentence] = parts
+    sentence_for_construct['correct_answer'] = sentence.sentence
     print(sentence_for_construct)
     return sentence_for_construct
 
