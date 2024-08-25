@@ -50,7 +50,7 @@ def build_result_kb():
     return InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
 
 
-@router.callback_query(F.data == 'main_menu_btn_3')
+@router.callback_query(F.data.in_(('main_menu_btn_3','construct_again')))
 async def main_menu_btn_3(callback: types.CallbackQuery,
                           state: FSMContext,
                           step: int = 0):
@@ -83,20 +83,20 @@ async def process_answer_button(callback: types.CallbackQuery,
     await state.update_data(step=step + 1)
     logging.info(answers)
     logging.info(parts)
-    
     await state.update_data(answers=answers)
     parts.remove(callback.data)
     await state.update_data(parts=parts)
-    await callback.message.answer(
-        text=f'{"".join(answers)}',
-        reply_markup=build_sentence_kb(parts)
-    )
-
-    if len(parts) == 0:
-        await callback.message.answer(
-            text=f'Ваше предложение: {"".join(answers)}',
-            reply_markup=build_final_kb()
+    if len(parts) > 0:
+        await callback.message.edit_text(
+            text=f'{"".join(answers)}',
+            reply_markup=build_sentence_kb(parts)
         )
+    else:
+        if len(parts) == 0:
+            await callback.message.edit_text(
+                text=f'Ваше предложение: {"".join(answers)}',
+                reply_markup=build_final_kb()
+            )
     await callback.answer()
 
 
@@ -110,12 +110,12 @@ async def correct_answer(callback: types.CallbackQuery,
     answers = data.get('answers', [])
     user_answer = ' '.join(answers)
     if correct_answer == user_answer:
-        await callback.message.answer(
-            text='Верно!',
+        await callback.message.edit_text(
+            text='Все верно!',
             reply_markup=build_result_kb()
         )
     else:
-        await callback.message.answer(
+        await callback.message.edit_text(
             text=f'Неверно!\nПравильное предложение: {correct_answer}',
             reply_markup=build_result_kb()
         )
