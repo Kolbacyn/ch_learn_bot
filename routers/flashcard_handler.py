@@ -19,12 +19,14 @@ def build_flashcards_kb(step):
     inline_keyboard = []
     inline_keyboard.append([InlineKeyboardButton(
         text=FLASHCARDS[step].front_side,
-        callback_data='front_side')])
+        callback_data='flashcard_front_side')])
     inline_keyboard.append([
-        InlineKeyboardButton(text='✅', callback_data='correct_answer'),
-        InlineKeyboardButton(text='❌', callback_data='wrong_answer')])
+        InlineKeyboardButton(text='✅',
+                             callback_data='flashcard_correct_answer'),
+        InlineKeyboardButton(text='❌',
+                             callback_data='flashcard_wrong_answer')])
     inline_keyboard.append([InlineKeyboardButton(
-        text='Выйти', callback_data='leave')])
+        text='Выйти', callback_data='flashcard_leave')])
     return InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
 
 
@@ -65,7 +67,7 @@ async def enter_flashcards(callback: types.CallbackQuery,
     await callback.answer()
 
 
-@router.callback_query(F.data == 'front_side')
+@router.callback_query(F.data == 'flashcard_front_side')
 async def show_back_side(callback: types.CallbackQuery,
                          state: FSMContext):
     """Shows the back side of the flashcard"""
@@ -74,7 +76,8 @@ async def show_back_side(callback: types.CallbackQuery,
     await callback.answer(text=FLASHCARDS[step].hint)
 
 
-@router.callback_query(F.data.in_(('correct_answer', 'wrong_answer')))
+@router.callback_query(F.data.in_(('flashcard_correct_answer',
+                                   'flashcard_wrong_answer')))
 async def process_answer(callback: types.CallbackQuery,
                          state: FSMContext):
     """Processes the answer"""
@@ -104,7 +107,7 @@ async def process_answer(callback: types.CallbackQuery,
     await callback.answer()
 
 
-@router.callback_query(F.data == 'leave')
+@router.callback_query(F.data == 'flashcard_leave')
 async def leave(callback: types.CallbackQuery,
                 state: FSMContext):
     """Abrupts the flashcardsinteraction"""
