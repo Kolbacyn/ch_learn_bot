@@ -16,12 +16,13 @@ users: dict[int, dict[str, list]] = {}
 @router.message(Command('start'))
 async def cmd_start(message: types.Message):
     """Processing start command"""
+    await message.delete()
     picture = types.FSInputFile(Picture.GREETING)
     if not users.get(message.from_user.id):
         users[message.from_user.id] = {}
     await message.answer_photo(picture)
     await message.answer(
-        f'你好 {message.from_user.full_name}!'
+        f'{CommonMessage.NIHAO} {message.from_user.full_name}!'
         )
     await asyncio.sleep(1)
     await message.answer(
@@ -46,6 +47,7 @@ async def cmd_start(message: types.Message):
 @router.message(Command('help'))
 async def cmd_help(message: types.Message):
     """Processing help command"""
+    await message.delete()
     await message.answer(
         CommonMessage.HELP
         )
@@ -58,6 +60,7 @@ async def cmd_help(message: types.Message):
 async def cmd_cancel(message: types.Message,
                      state: FSMContext):
     """Processing cancel command"""
+    await message.delete()
     await message.answer(CommonMessage.CANCEL)
     await state.clear()
     await message.answer(
