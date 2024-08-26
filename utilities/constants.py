@@ -7,8 +7,11 @@ class Button(str, Enum):
     FLASHCARDS = 'main_menu_btn_2'
     CONSTRUCTOR = 'main_menu_btn_3'
     HSK_1_BUTTON = 'hsk_buttons_1'
+    ACCEPT = '✅ Подтвердить'
     CANCEL = '🔙 Назад'
     EXIT = '🚫 Выход'
+    GO_TO_MENU = '🏠 В меню'
+    REPEAT = '🔁 Повторить'
     CORRECT = '✅'
     WRONG = '❌'
 
@@ -37,7 +40,12 @@ class CommonMessage(str, Enum):
 
 class ConstructMessage(str, Enum):
     """Construct messages"""
+    CORRECT = 'Все верно!'
+    INCORRECT = 'Неверно!\nПравильное предложение: '
+    FINAL_ANSWER = 'Ваше предложение: '
+    INTERIM_ANSWER = 'Вы выбрали: '
     INITIAL = 'Составьте предложение из следующих слов: '
+    RETURN_TO_MENU = 'Возвращаемся в главное меню...'
 
 
 class FlashcardMessage(str, Enum):
