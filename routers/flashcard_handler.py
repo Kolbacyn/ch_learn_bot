@@ -7,6 +7,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from keyboards import build_main_menu_kb
 from utilities import constants
+from utilities.constants import Button, Picture, Rules, CommonMessage, FlashcardMessage
 from utilities.utils import create_image, generate_flashcard
 
 router = Router(name=__name__)
@@ -21,12 +22,13 @@ def build_flashcards_kb(step):
         text=FLASHCARDS[step].front_side,
         callback_data='flashcard_front_side')])
     inline_keyboard.append([
-        InlineKeyboardButton(text='✅',
+        InlineKeyboardButton(text=Button.CORRECT,
                              callback_data='flashcard_correct_answer'),
-        InlineKeyboardButton(text='❌',
+        InlineKeyboardButton(text=Button.WRONG,
                              callback_data='flashcard_wrong_answer')])
     inline_keyboard.append([InlineKeyboardButton(
-        text='Выйти', callback_data='flashcard_leave')])
+        text=Button.EXIT,
+        callback_data='flashcard_leave')])
     return InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
 
 
@@ -35,32 +37,32 @@ def make_summary(crct_answers: int, wrg_answers: int):
     return f'Верных ответов: {crct_answers}\nНеверных ответов: {wrg_answers}'
 
 
-@router.callback_query(F.data == 'main_menu_btn_2')
+@router.callback_query(F.data == Button.FLASHCARDS)
 async def enter_flashcards(callback: types.CallbackQuery,
                            state: FSMContext,
                            step: int = 0):
     """Starts the flashcards interaction"""
     await state.clear()
     if not step:
-        await callback.message.answer(constants.WELCOME_MSG)
+        await callback.message.answer(CommonMessage.WELCOME)
     try:
         FLASHCARDS[step]
     except IndexError:
-        await callback.message.answer(constants.GAME_OVER_MSG)
+        await callback.message.answer(CommonMessage.GAME_OVER)
         await state.clear()
         return
     await state.update_data(step=step)
     logging.info(FLASHCARDS[step].front_side)
     await callback.message.answer(
-        text=constants.FLASHCARDS_RULES
+        text=Rules.FLASHCARDS_RULES
     )
     await asyncio.sleep(1)
     await callback.message.answer(
-        constants.START_TRAINING_MESSAGE
+        FlashcardMessage.START_FLASHCARDS
     )
     create_image(FLASHCARDS[step].front_side)
     await callback.message.answer_photo(
-        photo=types.FSInputFile('biffer.png'),
+        photo=types.FSInputFile(Picture.FLASHCARD),
         reply_markup=build_flashcards_kb(step)
     )
     await asyncio.sleep(0.5)
@@ -87,7 +89,7 @@ async def process_answer(callback: types.CallbackQuery,
         FLASHCARDS[step]
     except IndexError:
         await callback.answer()
-        await callback.message.answer(constants.GAME_OVER_MSG)
+        await callback.message.answer(CommonMessage.GAME_OVER)
         await state.clear()
         return
     create_image(FLASHCARDS[step].front_side)
@@ -99,7 +101,7 @@ async def process_answer(callback: types.CallbackQuery,
         await state.update_data(wrong_answers=wrong_answers)
     await callback.message.edit_media(
         types.InputMediaPhoto(
-            media=types.FSInputFile(constants.FLASHCARD_PICTURE)
+            media=types.FSInputFile(Picture.FLASHCARD)
             ),
         reply_markup=build_flashcards_kb(step)
     )
@@ -110,14 +112,14 @@ async def process_answer(callback: types.CallbackQuery,
 @router.callback_query(F.data == 'flashcard_leave')
 async def leave(callback: types.CallbackQuery,
                 state: FSMContext):
-    """Abrupts the flashcardsinteraction"""
+    """Abrupts the flashcards interaction"""
     data = await state.get_data()
     correct_answers = data.get('correct_answers', 0)
     wrong_answers = data.get('wrong_answers', 0)
     content = make_summary(correct_answers, wrong_answers)
     await callback.message.edit_media(
         types.InputMediaPhoto(
-            media=types.FSInputFile(constants.GREETING_PICTURE),
+            media=types.FSInputFile(Picture.GREETING),
             caption=content
             ),
         reply_markup=build_main_menu_kb()

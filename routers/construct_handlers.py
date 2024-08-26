@@ -6,6 +6,7 @@ from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
                            ReplyKeyboardRemove)
 
 from keyboards import build_main_menu_kb
+from utilities.constants import Button, ConstructMessage
 from utilities.utils import generate_sep_sentence
 
 router = Router(name=__name__)
@@ -69,7 +70,7 @@ async def main_menu_btn_3(callback: types.CallbackQuery,
     await state.update_data(step=step)
     await state.update_data(correct_answer=correct_answer)
     await callback.message.answer(
-        'Составьте предложение из следующих слов: ',
+        ConstructMessage.INITIAL,
         reply_markup=build_sentence_kb(values[0], step)
     )
     await state.update_data(parts=values[0])
@@ -161,7 +162,7 @@ async def step_back(callback: types.CallbackQuery,
             )
     else:
         await callback.message.edit_text(
-            text='Составьте предложение из следующих слов: ',
+            text=ConstructMessage.INITIAL,
             reply_markup=build_sentence_kb(parts, step)
             )
     await callback.answer()

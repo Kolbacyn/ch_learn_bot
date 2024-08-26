@@ -6,6 +6,7 @@ from aiogram.filters.command import Command
 from aiogram.fsm.context import FSMContext
 
 import utilities.constants as constants
+from utilities.constants import CommonMessage, Picture
 from keyboards import build_hsk_kb, build_main_menu_kb
 
 router = Router(name=__name__)
@@ -16,7 +17,7 @@ users: dict[int, dict[str, list]] = {}
 @router.message(Command('start'))
 async def cmd_start(message: types.Message):
     """Processing start command"""
-    picture = types.FSInputFile(constants.GREETING_PICTURE)
+    picture = types.FSInputFile(Picture.GREETING)
     if not users.get(message.from_user.id):
         users[message.from_user.id] = {}
     await message.answer_photo(picture)
@@ -25,20 +26,20 @@ async def cmd_start(message: types.Message):
         )
     await asyncio.sleep(1)
     await message.answer(
-        constants.GREETING_MESSAGE
+        CommonMessage.GREETING
         )
     await asyncio.sleep(1)
     if not users[message.from_user.id].get('hsk_level'):
         logging.info(users)
-        await message.answer(constants.INTRODUCING_MSG)
+        await message.answer(CommonMessage.INTRODUCING)
         await asyncio.sleep(1)
         await message.answer(
-            constants.CHOOSE_HSK_LEVEL_MSG,
+            CommonMessage.CHOOSE_HSK_LEVEL,
             reply_markup=build_hsk_kb()
             )
     else:
         await message.answer(
-            constants.LETS_START_MESSAGE,
+            CommonMessage.STARTING,
             reply_markup=build_main_menu_kb()
             )
 
@@ -47,10 +48,10 @@ async def cmd_start(message: types.Message):
 async def cmd_help(message: types.Message):
     """Processing help command"""
     await message.answer(
-        constants.HELP_MESSAGE
+        CommonMessage.HELP
         )
     await message.answer(
-        constants.INSTRUCTIONS_MESSAGE
+        CommonMessage.INSTRUCTIONS
         )
 
 
@@ -58,9 +59,9 @@ async def cmd_help(message: types.Message):
 async def cmd_cancel(message: types.Message,
                      state: FSMContext):
     """Processing cancel command"""
-    await message.answer(constants.CANCEL_MESSAGE)
+    await message.answer(CommonMessage.CANCEL)
     await state.clear()
     await message.answer(
-        constants.STARTOVER_MESSAGE,
+        CommonMessage.STARTOVER,
         reply_markup=build_hsk_kb()
         )
