@@ -6,7 +6,7 @@ from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
                            ReplyKeyboardRemove)
 
 from keyboards import build_main_menu_kb
-from utilities.constants import Button, ConstructMessage
+from utilities.constants import Button, ConstructMessage, Picture
 from utilities.utils import generate_sep_sentence
 
 router = Router(name=__name__)
@@ -22,9 +22,9 @@ def build_sentence_kb(words: list, step: int):
             text=word))
     inline_keyboard.append(words_buttons)
     service_buttons = [
-        InlineKeyboardButton(text='Назад',
+        InlineKeyboardButton(text=Button.CANCEL,
                              callback_data='construct_back'),
-        InlineKeyboardButton(text='Выйти',
+        InlineKeyboardButton(text=Button.EXIT,
                              callback_data='construct_leave')
     ]
     if step > 0:
@@ -38,9 +38,9 @@ def build_final_kb():
     """Adds buttons to the keyboard at the final stage"""
     inline_keyboard = []
     inline_keyboard.append([
-        InlineKeyboardButton(text='Назад',
+        InlineKeyboardButton(text=Button.CANCEL,
                              callback_data='construct_back'),
-        InlineKeyboardButton(text='Подтвердить',
+        InlineKeyboardButton(text=Button.ACCEPT,
                              callback_data='construct_correct')
         ])
     return InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
@@ -50,9 +50,9 @@ def build_result_kb():
     """Adds buttons to the keyboard at the final stage"""
     inline_keyboard = []
     inline_keyboard.append([
-        InlineKeyboardButton(text='Назад',
-                             callback_data='construct_back'),
-        InlineKeyboardButton(text='Повторить',
+        InlineKeyboardButton(text=Button.EXIT,
+                             callback_data='construct_leave'),
+        InlineKeyboardButton(text=Button.REPEAT,
                              callback_data='construct_again')
         ])
     return InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
@@ -92,13 +92,13 @@ async def process_answer_button(callback: types.CallbackQuery,
     await state.update_data(parts=parts)
     if len(parts) > 0:
         await callback.message.edit_text(
-            text=f'{"".join(answers)}',
+            text=f'{ConstructMessage.INTERIM_ANSWER}{" ".join(answers)}',
             reply_markup=build_sentence_kb(parts, step)
         )
     else:
         if len(parts) == 0:
             await callback.message.edit_text(
-                text=f'Ваше предложение: {"".join(answers)}',
+                text=f'{ConstructMessage.FINAL_ANSWER}{" ".join(answers)}',
                 reply_markup=build_final_kb()
             )
     await callback.answer()
@@ -114,12 +114,12 @@ async def correct_answer(callback: types.CallbackQuery,
     user_answer = ' '.join(answers)
     if correct_answer == user_answer:
         await callback.message.edit_text(
-            text='Все верно!',
+            text=ConstructMessage.CORRECT,
             reply_markup=build_result_kb()
         )
     else:
         await callback.message.edit_text(
-            text=f'Неверно!\nПравильное предложение: {correct_answer}',
+            text=f'{ConstructMessage.INCORRECT}{correct_answer}',
             reply_markup=build_result_kb()
         )
     await state.clear()
@@ -130,12 +130,13 @@ async def correct_answer(callback: types.CallbackQuery,
 async def exit_construct(callback: types.CallbackQuery):
     """Exits the construct game"""
     await callback.message.answer(
-        'Возвращаюсь в главное меню...',
+        ConstructMessage.RETURN_TO_MENU,
         reply_markup=ReplyKeyboardRemove()
         )
+    await callback.answer()
     await asyncio.sleep(1)
-    await callback.message.answer(
-        'Good job',
+    await callback.message.answer_photo(
+        photo=types.FSInputFile(Picture.GREETING),
         reply_markup=build_main_menu_kb()
         )
     await callback.answer()
@@ -157,7 +158,7 @@ async def step_back(callback: types.CallbackQuery,
     await state.update_data(parts=parts)
     if step > 0:
         await callback.message.edit_text(
-            text=f'{" ".join(answers)}',
+            text=' '.join(answers),
             reply_markup=build_sentence_kb(parts, step)
             )
     else:

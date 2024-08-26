@@ -10,7 +10,7 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 from keyboards import build_main_menu_kb
 from utilities import constants
-from utilities.constants import Button, Rules, CommonMessage, QuizMessage
+from utilities.constants import Button,  CommonMessage, Rules
 from utilities.utils import generate_question
 
 router = Router(name=__name__)
