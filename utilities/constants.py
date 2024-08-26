@@ -3,9 +3,6 @@ from enum import Enum
 
 class Button(str, Enum):
     """Buttons"""
-    QUIZ = 'main_menu_btn_1'
-    FLASHCARDS = 'main_menu_btn_2'
-    CONSTRUCTOR = 'main_menu_btn_3'
     HSK_1_BUTTON = 'hsk_buttons_1'
     ACCEPT = '✅ Подтвердить'
     CANCEL = '🔙 Назад'
@@ -14,6 +11,24 @@ class Button(str, Enum):
     REPEAT = '🔁 Повторить'
     CORRECT = '✅'
     WRONG = '❌'
+
+
+class ButtonData(str, Enum):
+    """Button data"""
+    TRAIN_QUIZ = 'main_menu_btn_1'
+    TRAIN_FLASHCARDS = 'main_menu_btn_2'
+    TRAIN_CONSTRUCTOR = 'main_menu_btn_3'
+
+    CONSTRUCT_AGAIN = 'construct_again'
+    CONSTRUCT_BACK = 'construct_back'
+    CONSTRUCT_CORRECT = 'construct_correct'
+    CONSTRUCT_LEAVE = 'construct_leave'
+    CONSTRUCT_REPEAT = 'construct_repeat'
+
+    FLASHCARD_FRONT_SIDE = 'flashcard_front_side'
+    FLASHCARD_CORRECT_ANSWER = 'flashcard_correct_answer'
+    FLASHCARD_WRONG_ANSWER = 'flashcard_wrong_answer'
+    FLASHCARD_LEAVE = 'flashcard_leave'
 
 
 class Picture(str, Enum):
@@ -36,6 +51,7 @@ class CommonMessage(str, Enum):
     STARTING = 'Ну что же, приступим!'
     STARTOVER = 'Начнем сначала!'
     WELCOME = 'Добро пожаловать в игру!'
+    NIHAO = '你好'
 
 
 class ConstructMessage(str, Enum):
@@ -82,3 +98,9 @@ class Rules(str, Enum):
 
         Отвечайте честно, ведь я знаю все правильные ответы 🤓
         '''
+
+
+class NumericConst(int, Enum):
+    """Numbers"""
+    ZERO = 0
+    ONE = 1

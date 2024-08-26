@@ -10,7 +10,7 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 from keyboards import build_main_menu_kb
 from utilities import constants
-from utilities.constants import Button,  CommonMessage, Rules
+from utilities.constants import Button, ButtonData, CommonMessage, Rules
 from utilities.utils import generate_question
 
 router = Router(name=__name__)
@@ -64,7 +64,7 @@ def make_summary(answers: dict):
     )
 
 
-@router.callback_query(F.data == Button.QUIZ)
+@router.callback_query(F.data == ButtonData.TRAIN_QUIZ)
 async def enter_quiz(callback: types.CallbackQuery,
                      state: FSMContext,
                      step: int = 0

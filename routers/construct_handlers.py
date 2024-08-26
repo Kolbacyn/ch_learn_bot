@@ -6,7 +6,8 @@ from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
                            ReplyKeyboardRemove)
 
 from keyboards import build_main_menu_kb
-from utilities.constants import Button, ConstructMessage, Picture
+from utilities.constants import (Button, ButtonData, ConstructMessage,
+                                 NumericConst, Picture)
 from utilities.utils import generate_sep_sentence
 
 router = Router(name=__name__)
@@ -22,10 +23,14 @@ def build_sentence_kb(words: list, step: int):
             text=word))
     inline_keyboard.append(words_buttons)
     service_buttons = [
-        InlineKeyboardButton(text=Button.CANCEL,
-                             callback_data='construct_back'),
-        InlineKeyboardButton(text=Button.EXIT,
-                             callback_data='construct_leave')
+        InlineKeyboardButton(
+            text=Button.CANCEL,
+            callback_data=ButtonData.CONSTRUCT_BACK
+            ),
+        InlineKeyboardButton(
+            text=Button.EXIT,
+            callback_data=ButtonData.CONSTRUCT_LEAVE
+            )
     ]
     if step > 0:
         inline_keyboard.append(service_buttons)
@@ -38,10 +43,14 @@ def build_final_kb():
     """Adds buttons to the keyboard at the final stage"""
     inline_keyboard = []
     inline_keyboard.append([
-        InlineKeyboardButton(text=Button.CANCEL,
-                             callback_data='construct_back'),
-        InlineKeyboardButton(text=Button.ACCEPT,
-                             callback_data='construct_correct')
+        InlineKeyboardButton(
+            text=Button.CANCEL,
+            callback_data=ButtonData.CONSTRUCT_BACK
+            ),
+        InlineKeyboardButton(
+            text=Button.ACCEPT,
+            callback_data=ButtonData.CONSTRUCT_CORRECT
+            )
         ])
     return InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
 
@@ -50,15 +59,20 @@ def build_result_kb():
     """Adds buttons to the keyboard at the final stage"""
     inline_keyboard = []
     inline_keyboard.append([
-        InlineKeyboardButton(text=Button.EXIT,
-                             callback_data='construct_leave'),
-        InlineKeyboardButton(text=Button.REPEAT,
-                             callback_data='construct_again')
+        InlineKeyboardButton(
+            text=Button.EXIT,
+            callback_data=ButtonData.CONSTRUCT_LEAVE
+            ),
+        InlineKeyboardButton(
+            text=Button.REPEAT,
+            callback_data=ButtonData.CONSTRUCT_AGAIN
+            )
         ])
     return InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
 
 
-@router.callback_query(F.data.in_(('main_menu_btn_3', 'construct_again')))
+@router.callback_query(F.data.in_((ButtonData.TRAIN_CONSTRUCTOR,
+                                   ButtonData.CONSTRUCT_AGAIN)))
 async def main_menu_btn_3(callback: types.CallbackQuery,
                           state: FSMContext,
                           step: int = 0):
@@ -82,7 +96,7 @@ async def process_answer_button(callback: types.CallbackQuery,
                                 state: FSMContext):
     """Processes the answer"""
     data = await state.get_data()
-    step = data['step'] + 1
+    step = data['step'] + NumericConst.ONE
     answers = data.get('answers', [])
     parts = data.get('parts', [])
     answers.append(callback.data.lstrip('part_'))
@@ -90,13 +104,13 @@ async def process_answer_button(callback: types.CallbackQuery,
     await state.update_data(answers=answers)
     parts.remove(callback.data.lstrip('part_'))
     await state.update_data(parts=parts)
-    if len(parts) > 0:
+    if len(parts) > NumericConst.ZERO:
         await callback.message.edit_text(
             text=f'{ConstructMessage.INTERIM_ANSWER}{" ".join(answers)}',
             reply_markup=build_sentence_kb(parts, step)
         )
     else:
-        if len(parts) == 0:
+        if len(parts) == NumericConst.ZERO:
             await callback.message.edit_text(
                 text=f'{ConstructMessage.FINAL_ANSWER}{" ".join(answers)}',
                 reply_markup=build_final_kb()
@@ -104,7 +118,7 @@ async def process_answer_button(callback: types.CallbackQuery,
     await callback.answer()
 
 
-@router.callback_query(F.data == 'construct_correct')
+@router.callback_query(F.data == ButtonData.CONSTRUCT_CORRECT)
 async def correct_answer(callback: types.CallbackQuery,
                          state: FSMContext):
     """Confirms the correct answer"""
@@ -126,7 +140,7 @@ async def correct_answer(callback: types.CallbackQuery,
     await callback.answer()
 
 
-@router.callback_query(F.data == 'construct_leave')
+@router.callback_query(F.data == ButtonData.CONSTRUCT_LEAVE)
 async def exit_construct(callback: types.CallbackQuery):
     """Exits the construct game"""
     await callback.message.answer(
@@ -134,7 +148,7 @@ async def exit_construct(callback: types.CallbackQuery):
         reply_markup=ReplyKeyboardRemove()
         )
     await callback.answer()
-    await asyncio.sleep(1)
+    await asyncio.sleep(NumericConst.ONE)
     await callback.message.answer_photo(
         photo=types.FSInputFile(Picture.GREETING),
         reply_markup=build_main_menu_kb()
@@ -142,13 +156,13 @@ async def exit_construct(callback: types.CallbackQuery):
     await callback.answer()
 
 
-@router.callback_query(F.data == 'construct_back')
+@router.callback_query(F.data == ButtonData.CONSTRUCT_BACK)
 async def step_back(callback: types.CallbackQuery,
                     state: FSMContext):
     """Returns to the previous step"""
     data = await state.get_data()
     step = data.get('step')
-    step -= 1
+    step -= NumericConst.ONE
     await state.update_data(step=step)
     answers = data.get('answers', [])
     parts = data.get('parts', [])
@@ -156,7 +170,7 @@ async def step_back(callback: types.CallbackQuery,
     parts.append(returning_part)
     await state.update_data(answers=answers)
     await state.update_data(parts=parts)
-    if step > 0:
+    if step > NumericConst.ZERO:
         await callback.message.edit_text(
             text=' '.join(answers),
             reply_markup=build_sentence_kb(parts, step)

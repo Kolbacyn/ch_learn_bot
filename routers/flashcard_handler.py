@@ -7,7 +7,8 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from keyboards import build_main_menu_kb
 from utilities import constants
-from utilities.constants import Button, Picture, Rules, CommonMessage, FlashcardMessage
+from utilities.constants import (Button, ButtonData, Picture, Rules,
+                                 CommonMessage, FlashcardMessage)
 from utilities.utils import create_image, generate_flashcard
 
 router = Router(name=__name__)
@@ -20,15 +21,19 @@ def build_flashcards_kb(step):
     inline_keyboard = []
     inline_keyboard.append([InlineKeyboardButton(
         text=FLASHCARDS[step].front_side,
-        callback_data='flashcard_front_side')])
+        callback_data=ButtonData.FLASHCARD_FRONT_SIDE)])
     inline_keyboard.append([
-        InlineKeyboardButton(text=Button.CORRECT,
-                             callback_data='flashcard_correct_answer'),
-        InlineKeyboardButton(text=Button.WRONG,
-                             callback_data='flashcard_wrong_answer')])
+        InlineKeyboardButton(
+            text=Button.CORRECT,
+            callback_data=ButtonData.FLASHCARD_CORRECT_ANSWER
+            ),
+        InlineKeyboardButton(
+            text=Button.WRONG,
+            callback_data=ButtonData.FLASHCARD_WRONG_ANSWER
+            )])
     inline_keyboard.append([InlineKeyboardButton(
         text=Button.EXIT,
-        callback_data='flashcard_leave')])
+        callback_data=ButtonData.FLASHCARD_LEAVE)])
     return InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
 
 
@@ -37,7 +42,7 @@ def make_summary(crct_answers: int, wrg_answers: int):
     return f'Верных ответов: {crct_answers}\nНеверных ответов: {wrg_answers}'
 
 
-@router.callback_query(F.data == Button.FLASHCARDS)
+@router.callback_query(F.data == ButtonData.TRAIN_FLASHCARDS)
 async def enter_flashcards(callback: types.CallbackQuery,
                            state: FSMContext,
                            step: int = 0):
@@ -69,7 +74,7 @@ async def enter_flashcards(callback: types.CallbackQuery,
     await callback.answer()
 
 
-@router.callback_query(F.data == 'flashcard_front_side')
+@router.callback_query(F.data == ButtonData.FLASHCARD_FRONT_SIDE)
 async def show_back_side(callback: types.CallbackQuery,
                          state: FSMContext):
     """Shows the back side of the flashcard"""
@@ -78,8 +83,8 @@ async def show_back_side(callback: types.CallbackQuery,
     await callback.answer(text=FLASHCARDS[step].hint)
 
 
-@router.callback_query(F.data.in_(('flashcard_correct_answer',
-                                   'flashcard_wrong_answer')))
+@router.callback_query(F.data.in_((ButtonData.FLASHCARD_CORRECT_ANSWER,
+                                   ButtonData.FLASHCARD_WRONG_ANSWER)))
 async def process_answer(callback: types.CallbackQuery,
                          state: FSMContext):
     """Processes the answer"""
@@ -109,7 +114,7 @@ async def process_answer(callback: types.CallbackQuery,
     await callback.answer()
 
 
-@router.callback_query(F.data == 'flashcard_leave')
+@router.callback_query(F.data == ButtonData.FLASHCARD_LEAVE)
 async def leave(callback: types.CallbackQuery,
                 state: FSMContext):
     """Abrupts the flashcards interaction"""
