@@ -9,8 +9,8 @@ from aiogram.utils.formatting import (Bold, as_key_value, as_list,
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 from keyboards import build_main_menu_kb
-from utilities.constants import (Button, ButtonData, CommonMessage,
-                                 Numeric, Rules)
+from utilities.constants import (Button, ButtonData, CommonMessage, Numeric,
+                                 Rules)
 from utilities.utils import generate_question
 
 router = Router(name=__name__)

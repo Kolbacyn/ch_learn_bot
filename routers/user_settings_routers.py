@@ -3,9 +3,9 @@ import logging
 from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
 
-from utilities.constants import CommonMessage, Numeric
 from keyboards import build_language_kb, build_main_menu_kb
 from routers.command_handlers import users
+from utilities.constants import CommonMessage, Numeric
 
 router = Router(name=__name__)
 
