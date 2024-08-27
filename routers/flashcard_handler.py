@@ -7,8 +7,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from keyboards import build_main_menu_kb
 from utilities.constants import (Button, ButtonData, CommonMessage,
-                                 FlashcardMessage, Numeric, Picture,
-                                 Rules)
+                                 FlashcardMessage, Numeric, Picture, Rules)
 from utilities.utils import create_image, generate_flashcard
 
 router = Router(name=__name__)

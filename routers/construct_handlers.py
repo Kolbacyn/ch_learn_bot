@@ -6,8 +6,8 @@ from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
                            ReplyKeyboardRemove)
 
 from keyboards import build_main_menu_kb
-from utilities.constants import (Button, ButtonData, ConstructMessage,
-                                 Numeric, Picture, Rules)
+from utilities.constants import (Button, ButtonData, ConstructMessage, Numeric,
+                                 Picture, Rules)
 from utilities.utils import generate_sep_sentence
 
 router = Router(name=__name__)
