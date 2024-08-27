@@ -23,3 +23,11 @@ class Word(Base):
     transcription = Column(String)
     rus_translation = Column(String)
     level = Column(Integer)
+
+
+class Sentence(Base):
+    """Model for sentence"""
+    sentence = Column(String)
+    transcription = Column(String)
+    translation = Column(String)
+    level = Column(Integer)

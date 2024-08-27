@@ -3,9 +3,9 @@ import logging
 from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
 
-import utilities.constants as constants
 from keyboards import build_language_kb, build_main_menu_kb
 from routers.command_handlers import users
+from utilities.constants import CommonMessage, Numeric
 
 router = Router(name=__name__)
 
@@ -18,10 +18,10 @@ async def hsk_level(callback: types.CallbackQuery,
     data = await state.get_data()
     if not users[callback.from_user.id]:
         await callback.message.answer(
-            constants.CHOOSE_LANGUAGE_MSG,
+            CommonMessage.CHOOSE_LANGUAGE,
             reply_markup=build_language_kb()
         )
-        data['hsk_level'] = callback.data[-1]
+        data['hsk_level'] = callback.data[Numeric.LAST_ELEMENT]
     logging.info(users)
     logging.info(data)
     await state.update_data(data)
@@ -36,7 +36,7 @@ async def language(callback: types.CallbackQuery,
     logging.info(data)
     if not users[callback.from_user.id]:
         await callback.message.edit_text(
-            constants.START_TRAINING_MESSAGE,
+            CommonMessage.STARTING,
             reply_markup=build_main_menu_kb()
         )
         data['language'] = callback.data[-2:]
