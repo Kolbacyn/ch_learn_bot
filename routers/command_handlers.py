@@ -5,8 +5,8 @@ from aiogram import Router, types
 from aiogram.filters.command import Command
 from aiogram.fsm.context import FSMContext
 
-from utilities.constants import CommonMessage, Picture
 from keyboards import build_hsk_kb, build_main_menu_kb
+from utilities.constants import CommonMessage, Numeric, Picture
 
 router = Router(name=__name__)
 
@@ -24,15 +24,15 @@ async def cmd_start(message: types.Message):
     await message.answer(
         f'{CommonMessage.NIHAO} {message.from_user.full_name}!'
         )
-    await asyncio.sleep(1)
+    await asyncio.sleep(Numeric.ONE)
     await message.answer(
         CommonMessage.GREETING
         )
-    await asyncio.sleep(1)
+    await asyncio.sleep(Numeric.ONE)
     if not users[message.from_user.id].get('hsk_level'):
         logging.info(users)
         await message.answer(CommonMessage.INTRODUCING)
-        await asyncio.sleep(1)
+        await asyncio.sleep(Numeric.ONE)
         await message.answer(
             CommonMessage.CHOOSE_HSK_LEVEL,
             reply_markup=build_hsk_kb()

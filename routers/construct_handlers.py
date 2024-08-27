@@ -6,8 +6,8 @@ from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
                            ReplyKeyboardRemove)
 
 from keyboards import build_main_menu_kb
-from utilities.constants import (Button, ButtonData, ConstructMessage,
-                                 NumericConst, Picture)
+from utilities.constants import (Button, ButtonData, ConstructMessage, Numeric,
+                                 Picture, Rules)
 from utilities.utils import generate_sep_sentence
 
 router = Router(name=__name__)
@@ -32,7 +32,7 @@ def build_sentence_kb(words: list, step: int):
             callback_data=ButtonData.CONSTRUCT_LEAVE
             )
     ]
-    if step > 0:
+    if step > Numeric.ZERO:
         inline_keyboard.append(service_buttons)
     else:
         inline_keyboard.append([service_buttons[-1]])
@@ -78,6 +78,11 @@ async def main_menu_btn_3(callback: types.CallbackQuery,
                           step: int = 0):
     """Starts the construct interaction"""
     await state.clear()
+    if callback.data == ButtonData.TRAIN_CONSTRUCTOR:
+        await callback.message.answer(
+            Rules.CONSTRUCT_RULES
+        )
+        asyncio.sleep(Numeric.ONE)
     sentence = generate_sep_sentence()
     correct_answer = sentence['correct_answer']
     values = list(sentence.values())
@@ -85,9 +90,9 @@ async def main_menu_btn_3(callback: types.CallbackQuery,
     await state.update_data(correct_answer=correct_answer)
     await callback.message.answer(
         ConstructMessage.INITIAL,
-        reply_markup=build_sentence_kb(values[0], step)
+        reply_markup=build_sentence_kb(values[Numeric.ZERO], step)
     )
-    await state.update_data(parts=values[0])
+    await state.update_data(parts=values[Numeric.ZERO])
     await callback.answer()
 
 
@@ -96,7 +101,7 @@ async def process_answer_button(callback: types.CallbackQuery,
                                 state: FSMContext):
     """Processes the answer"""
     data = await state.get_data()
-    step = data['step'] + NumericConst.ONE
+    step = data['step'] + Numeric.ONE
     answers = data.get('answers', [])
     parts = data.get('parts', [])
     answers.append(callback.data.lstrip('part_'))
@@ -104,13 +109,13 @@ async def process_answer_button(callback: types.CallbackQuery,
     await state.update_data(answers=answers)
     parts.remove(callback.data.lstrip('part_'))
     await state.update_data(parts=parts)
-    if len(parts) > NumericConst.ZERO:
+    if len(parts) > Numeric.ZERO:
         await callback.message.edit_text(
             text=f'{ConstructMessage.INTERIM_ANSWER}{" ".join(answers)}',
             reply_markup=build_sentence_kb(parts, step)
         )
     else:
-        if len(parts) == NumericConst.ZERO:
+        if len(parts) == Numeric.ZERO:
             await callback.message.edit_text(
                 text=f'{ConstructMessage.FINAL_ANSWER}{" ".join(answers)}',
                 reply_markup=build_final_kb()
@@ -148,7 +153,7 @@ async def exit_construct(callback: types.CallbackQuery):
         reply_markup=ReplyKeyboardRemove()
         )
     await callback.answer()
-    await asyncio.sleep(NumericConst.ONE)
+    await asyncio.sleep(Numeric.ONE)
     await callback.message.answer_photo(
         photo=types.FSInputFile(Picture.GREETING),
         reply_markup=build_main_menu_kb()
@@ -162,15 +167,15 @@ async def step_back(callback: types.CallbackQuery,
     """Returns to the previous step"""
     data = await state.get_data()
     step = data.get('step')
-    step -= NumericConst.ONE
+    step -= Numeric.ONE
     await state.update_data(step=step)
     answers = data.get('answers', [])
     parts = data.get('parts', [])
-    returning_part = answers.pop(-1)
+    returning_part = answers.pop(Numeric.LAST_ELEMENT)
     parts.append(returning_part)
     await state.update_data(answers=answers)
     await state.update_data(parts=parts)
-    if step > NumericConst.ZERO:
+    if step > Numeric.ZERO:
         await callback.message.edit_text(
             text=' '.join(answers),
             reply_markup=build_sentence_kb(parts, step)

@@ -6,9 +6,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from keyboards import build_main_menu_kb
-from utilities import constants
-from utilities.constants import (Button, ButtonData, Picture, Rules,
-                                 CommonMessage, FlashcardMessage)
+from utilities.constants import (Button, ButtonData, CommonMessage,
+                                 FlashcardMessage, Numeric, Picture, Rules)
 from utilities.utils import create_image, generate_flashcard
 
 router = Router(name=__name__)
@@ -89,7 +88,7 @@ async def process_answer(callback: types.CallbackQuery,
                          state: FSMContext):
     """Processes the answer"""
     data = await state.get_data()
-    step = data.get('step') + 1
+    step = data.get('step') + Numeric.ONE
     try:
         FLASHCARDS[step]
     except IndexError:
@@ -99,10 +98,12 @@ async def process_answer(callback: types.CallbackQuery,
         return
     create_image(FLASHCARDS[step].front_side)
     if callback.data == 'correct_answer':
-        correct_answers = data.get('correct_answers', 0) + 1
+        correct_answers = data.get('correct_answers',
+                                   Numeric.ZERO) + Numeric.ONE
         await state.update_data(correct_answers=correct_answers)
     else:
-        wrong_answers = data.get('wrong_answers', 0) + 1
+        wrong_answers = data.get('wrong_answers',
+                                 Numeric.ZERO) + Numeric.ONE
         await state.update_data(wrong_answers=wrong_answers)
     await callback.message.edit_media(
         types.InputMediaPhoto(
@@ -119,8 +120,8 @@ async def leave(callback: types.CallbackQuery,
                 state: FSMContext):
     """Abrupts the flashcards interaction"""
     data = await state.get_data()
-    correct_answers = data.get('correct_answers', 0)
-    wrong_answers = data.get('wrong_answers', 0)
+    correct_answers = data.get('correct_answers', Numeric.ZERO)
+    wrong_answers = data.get('wrong_answers', Numeric.ZERO)
     content = make_summary(correct_answers, wrong_answers)
     await callback.message.edit_media(
         types.InputMediaPhoto(
