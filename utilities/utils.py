@@ -56,6 +56,14 @@ def generate_question():
     return Question(text=prompt, answers=answer_options)
 
 
+def generate_questions(quantity):
+    """Generate questions"""
+    questions = []
+    for _ in range(quantity):
+        questions.append(generate_question())
+    return questions
+
+
 def generate_flashcard():
     """Generate flashcard"""
     word = get_word_from_database()
@@ -64,6 +72,14 @@ def generate_flashcard():
         back_side=word.rus_translation,
         hint=word.transcription
     )
+
+
+def generate_flashcards(quantity):
+    """Generate flashcards"""
+    flashcards = []
+    for _ in range(quantity):
+        flashcards.append(generate_flashcard())
+    return flashcards
 
 
 def create_image(text):
