@@ -1,7 +1,10 @@
 from aiogram.types import (InlineKeyboardMarkup, KeyboardButton,
                            ReplyKeyboardMarkup)
-from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.utils.keyboard import (InlineKeyboardButton,
+                                    InlineKeyboardBuilder,
+                                    ReplyKeyboardBuilder)
 
+from utilities.constants import Button, ButtonData, Numeric
 from utilities.utils import AttemptsCallback, AttemptsQuantity
 
 
@@ -155,3 +158,36 @@ def build_language_kb() -> InlineKeyboardMarkup:
         callback_data='language_en'
     )
     return builder.as_markup()
+
+
+def build_answers_kb(step: int, questions: list):
+    """Creates the answers keyboard"""
+    kb = ReplyKeyboardBuilder()
+    answers = questions[step].answers
+    kb.add(*[KeyboardButton(text=answer.text) for answer in answers])
+    if step > Numeric.ZERO:
+        kb.button(text=Button.CANCEL)
+    kb.button(text=Button.EXIT)
+    kb.adjust(Numeric.ADJUSTMENT)
+    return kb
+
+
+def build_flashcards_kb(step, flashcards):
+    """Adds buttons to the keyboard"""
+    inline_keyboard = []
+    inline_keyboard.append([InlineKeyboardButton(
+        text=flashcards[step].front_side,
+        callback_data=ButtonData.FLASHCARD_FRONT_SIDE)])
+    inline_keyboard.append([
+        InlineKeyboardButton(
+            text=Button.CORRECT,
+            callback_data=ButtonData.FLASHCARD_CORRECT_ANSWER
+            ),
+        InlineKeyboardButton(
+            text=Button.WRONG,
+            callback_data=ButtonData.FLASHCARD_WRONG_ANSWER
+            )])
+    inline_keyboard.append([InlineKeyboardButton(
+        text=Button.EXIT,
+        callback_data=ButtonData.FLASHCARD_LEAVE)])
+    return InlineKeyboardMarkup(inline_keyboard=inline_keyboard)

@@ -3,39 +3,24 @@ import logging
 
 from aiogram import F, Router, html, types
 from aiogram.fsm.context import FSMContext
-from aiogram.types import KeyboardButton, ReplyKeyboardRemove
+from aiogram.types import ReplyKeyboardRemove
 from aiogram.utils.formatting import (Bold, as_key_value, as_list,
                                       as_numbered_list, as_section)
-from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
-from keyboards import build_main_menu_kb
+from keyboards import build_main_menu_kb, build_answers_kb
 from utilities.constants import (Button, ButtonData, CommonMessage, Numeric,
                                  Rules)
-from utilities.utils import generate_question
+from utilities.utils import generate_questions
 
 router = Router(name=__name__)
 
-QUESTIONS = [generate_question() for _ in range(10)]
 
-
-def build_answers_kb(step: int):
-    """Creates the answers keyboard"""
-    kb = ReplyKeyboardBuilder()
-    answers = QUESTIONS[step].answers
-    kb.add(*[KeyboardButton(text=answer.text) for answer in answers])
-    if step > Numeric.ZERO:
-        kb.button(text=Button.CANCEL)
-    kb.button(text=Button.EXIT)
-    kb.adjust(Numeric.ADJUSTMENT)
-    return kb
-
-
-def make_summary(answers: dict):
+def make_summary(answers: dict, questions: list):
     """Creates a summary of correct and wrong answers"""
     correct = 0
     incorrect = 0
     user_answers = []
-    for step, quiz in enumerate(QUESTIONS):
+    for step, quiz in enumerate(questions):
         answer = answers.get(step)
         is_correct = answer == quiz.correct_answer
         if is_correct:
@@ -70,17 +55,19 @@ async def enter_quiz(callback: types.CallbackQuery,
                      step: int = 0
                      ):
     """Starts the quiz"""
+    questions = generate_questions(10)
     if not step:
         await callback.message.answer(CommonMessage.WELCOME)
 
     try:
-        QUESTIONS[step]
+        questions[step]
     except IndexError:
         await callback.message.answer(CommonMessage.GAME_OVER)
         await state.clear()
         return
 
     await state.update_data(step=step)
+    await state.update_data(questions=questions)
     await callback.message.answer(
         text=Rules.QUIZ_RULES
     )
@@ -90,8 +77,9 @@ async def enter_quiz(callback: types.CallbackQuery,
     )
     await asyncio.sleep(Numeric.ONE)
     await callback.message.answer(
-        QUESTIONS[step].text,
-        reply_markup=build_answers_kb(step).as_markup(resize_keyboard=True)
+        questions[step].text,
+        reply_markup=build_answers_kb(step, questions).
+        as_markup(resize_keyboard=True)
     )
     await callback.answer()
 
@@ -105,12 +93,13 @@ async def check_answer(message: types.Message,
     step = data['step']
     answers = data.get('answers', {})
     answers[step] = message.text
+    questions = data.get('questions')
     await state.update_data(answers=answers)
     await state.update_data(step=step + Numeric.ONE)
     logging.info(answers)
     step = step + Numeric.ONE
-    if step == len(QUESTIONS):
-        content = make_summary(answers)
+    if step == len(questions):
+        content = make_summary(answers, questions)
         await message.answer(**content.as_kwargs(),
                              reply_markup=build_main_menu_kb())
         await message.answer(
@@ -120,8 +109,9 @@ async def check_answer(message: types.Message,
         await state.clear()
     else:
         await message.answer(
-            QUESTIONS[step].text,
-            reply_markup=build_answers_kb(step).as_markup(resize_keyboard=True)
+            questions[step].text,
+            reply_markup=build_answers_kb(step, questions).
+            as_markup(resize_keyboard=True)
         )
 
 
@@ -131,8 +121,9 @@ async def exit_game(message: types.Message,
     """Exits the quiz"""
     data = await state.get_data()
     answers = data.get('answers', {})
+    questions = data.get('questions')
 
-    content = make_summary(answers)
+    content = make_summary(answers, questions)
     await message.answer(**content.as_kwargs(),
                          reply_markup=build_main_menu_kb())
     await state.set_data({})
@@ -149,8 +140,10 @@ async def back_step(message: types.Message,
     data = await state.get_data()
     step = data.get('step')
     step -= Numeric.ONE
+    questions = data.get('questions')
     await state.update_data(step=step)
     await message.answer(
-        QUESTIONS[step].text,
-        reply_markup=build_answers_kb(step).as_markup(resize_keyboard=True)
+        questions[step].text,
+        reply_markup=build_answers_kb(step, questions).
+        as_markup(resize_keyboard=True)
     )
