@@ -9,6 +9,7 @@ from utilities.utils import AttemptsCallback, AttemptsQuantity
 
 
 def build_main_menu_kb() -> InlineKeyboardMarkup:
+    """Builds the main menu keyboard"""
     builder = InlineKeyboardBuilder()
     builder.button(
         text='Квиз',
@@ -26,6 +27,7 @@ def build_main_menu_kb() -> InlineKeyboardMarkup:
 
 
 def build_hsk_kb() -> InlineKeyboardMarkup:
+    """Builds the HSK keyboard"""
     builder = InlineKeyboardBuilder()
     builder.button(
         text='HSK1',
@@ -115,39 +117,40 @@ def build_attempts_kb2() -> ReplyKeyboardMarkup:
     )
 
 
-attempts_quantity_buttons = ReplyKeyboardMarkup(
-    keyboard=[
-        [KeyboardButton(
-            text='10 попыток',
-            callback_data=AttemptsCallback(
-                quantity=AttemptsQuantity.ten
-            ).pack()
-        ),
-         KeyboardButton(
-            text='20 попыток',
-            callback_data=AttemptsCallback(
-                quantity=AttemptsQuantity.twenty
-            ).pack()
-        ),
-         KeyboardButton(
-            text='50 попыток',
-            callback_data=AttemptsCallback(
-                quantity=AttemptsQuantity.fifty
-            ).pack()
-        ),
-         KeyboardButton(
-            text='100 попыток',
-            callback_data=AttemptsCallback(
-                quantity=AttemptsQuantity.hundred
-            ).pack()
-        )],
-    ],
-    resize_keyboard=True,
-    one_time_keyboard=True
-)
+# attempts_quantity_buttons = ReplyKeyboardMarkup(
+#     keyboard=[
+#         [KeyboardButton(
+#             text='10 попыток',
+#             callback_data=AttemptsCallback(
+#                 quantity=AttemptsQuantity.ten
+#             ).pack()
+#         ),
+#          KeyboardButton(
+#             text='20 попыток',
+#             callback_data=AttemptsCallback(
+#                 quantity=AttemptsQuantity.twenty
+#             ).pack()
+#         ),
+#          KeyboardButton(
+#             text='50 попыток',
+#             callback_data=AttemptsCallback(
+#                 quantity=AttemptsQuantity.fifty
+#             ).pack()
+#         ),
+#          KeyboardButton(
+#             text='100 попыток',
+#             callback_data=AttemptsCallback(
+#                 quantity=AttemptsQuantity.hundred
+#             ).pack()
+#         )],
+#     ],
+#     resize_keyboard=True,
+#     one_time_keyboard=True
+# )
 
 
 def build_language_kb() -> InlineKeyboardMarkup:
+    """Builds the language keyboard"""
     builder = InlineKeyboardBuilder()
     builder.button(
         text='Русский',
