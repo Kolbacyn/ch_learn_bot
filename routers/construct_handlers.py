@@ -2,80 +2,22 @@ import asyncio
 
 from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
-from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
-                           ReplyKeyboardRemove)
+from aiogram.types import ReplyKeyboardRemove
 
-from keyboards import build_main_menu_kb
-from utilities.constants import (Button, ButtonData, ConstructMessage, Numeric,
+from keyboards import (build_final_kb, build_main_menu_kb, build_result_kb,
+                       build_sentence_kb)
+from utilities.constants import (ButtonData, ConstructMessage, Numeric,
                                  Picture, Rules)
 from utilities.utils import generate_sep_sentence
 
 router = Router(name=__name__)
 
 
-def build_sentence_kb(words: list, step: int):
-    """Adds buttons to the keyboard"""
-    inline_keyboard = []
-    words_buttons = []
-    for word in words:
-        words_buttons.append(InlineKeyboardButton(
-            callback_data=f'part_{word}',
-            text=word))
-    inline_keyboard.append(words_buttons)
-    service_buttons = [
-        InlineKeyboardButton(
-            text=Button.CANCEL,
-            callback_data=ButtonData.CONSTRUCT_BACK
-            ),
-        InlineKeyboardButton(
-            text=Button.EXIT,
-            callback_data=ButtonData.CONSTRUCT_LEAVE
-            )
-    ]
-    if step > Numeric.ZERO:
-        inline_keyboard.append(service_buttons)
-    else:
-        inline_keyboard.append([service_buttons[-1]])
-    return InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
-
-
-def build_final_kb():
-    """Adds buttons to the keyboard at the final stage"""
-    inline_keyboard = []
-    inline_keyboard.append([
-        InlineKeyboardButton(
-            text=Button.CANCEL,
-            callback_data=ButtonData.CONSTRUCT_BACK
-            ),
-        InlineKeyboardButton(
-            text=Button.ACCEPT,
-            callback_data=ButtonData.CONSTRUCT_CORRECT
-            )
-        ])
-    return InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
-
-
-def build_result_kb():
-    """Adds buttons to the keyboard at the final stage"""
-    inline_keyboard = []
-    inline_keyboard.append([
-        InlineKeyboardButton(
-            text=Button.EXIT,
-            callback_data=ButtonData.CONSTRUCT_LEAVE
-            ),
-        InlineKeyboardButton(
-            text=Button.REPEAT,
-            callback_data=ButtonData.CONSTRUCT_AGAIN
-            )
-        ])
-    return InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
-
-
 @router.callback_query(F.data.in_((ButtonData.TRAIN_CONSTRUCTOR,
                                    ButtonData.CONSTRUCT_AGAIN)))
 async def main_menu_btn_3(callback: types.CallbackQuery,
                           state: FSMContext,
-                          step: int = 0):
+                          step: int = 0) -> None:
     """Starts the construct interaction"""
     await state.clear()
     if callback.data == ButtonData.TRAIN_CONSTRUCTOR:
@@ -98,7 +40,7 @@ async def main_menu_btn_3(callback: types.CallbackQuery,
 
 @router.callback_query(F.data.startswith('part_'))
 async def process_answer_button(callback: types.CallbackQuery,
-                                state: FSMContext):
+                                state: FSMContext) -> None:
     """Processes the answer"""
     data = await state.get_data()
     step = data['step'] + Numeric.ONE
@@ -125,7 +67,7 @@ async def process_answer_button(callback: types.CallbackQuery,
 
 @router.callback_query(F.data == ButtonData.CONSTRUCT_CORRECT)
 async def correct_answer(callback: types.CallbackQuery,
-                         state: FSMContext):
+                         state: FSMContext) -> None:
     """Confirms the correct answer"""
     data = await state.get_data()
     correct_answer = data.get('correct_answer')
@@ -146,7 +88,7 @@ async def correct_answer(callback: types.CallbackQuery,
 
 
 @router.callback_query(F.data == ButtonData.CONSTRUCT_LEAVE)
-async def exit_construct(callback: types.CallbackQuery):
+async def exit_construct(callback: types.CallbackQuery) -> None:
     """Exits the construct game"""
     await callback.message.answer(
         ConstructMessage.RETURN_TO_MENU,
@@ -163,7 +105,7 @@ async def exit_construct(callback: types.CallbackQuery):
 
 @router.callback_query(F.data == ButtonData.CONSTRUCT_BACK)
 async def step_back(callback: types.CallbackQuery,
-                    state: FSMContext):
+                    state: FSMContext) -> None:
     """Returns to the previous step"""
     data = await state.get_data()
     step = data.get('step')

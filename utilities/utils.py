@@ -14,12 +14,12 @@ Base.metadata.create_all(engine)
 session = Session(engine)
 
 
-def get_word_from_database():
+def get_word_from_database() -> Word:
     """Get word from database"""
     return choice(session.query(Word).all())
 
 
-def get_sentence_from_database():
+def get_sentence_from_database() -> Sentence:
     """Get sentence from database"""
     sent_engine = create_engine('sqlite:///sqlite_sentences.db', echo=False)
     Base.metadata.create_all(sent_engine)
@@ -27,7 +27,7 @@ def get_sentence_from_database():
     return choice(sent_session.query(Sentence).all())
 
 
-def generate_sep_sentence():
+def generate_sep_sentence() -> dict:
     """Generate separated sentence"""
     sentence = get_sentence_from_database()
     parts = list(sentence.sentence.split(' '))
@@ -39,7 +39,7 @@ def generate_sep_sentence():
     return sentence_for_construct
 
 
-def generate_question():
+def generate_question() -> Question:
     """
     Generate a question with a random word from the database and three options.
 
@@ -56,7 +56,7 @@ def generate_question():
     return Question(text=prompt, answers=answer_options)
 
 
-def generate_questions(quantity):
+def generate_questions(quantity) -> list[Question]:
     """Generate questions"""
     questions = []
     for _ in range(quantity):
@@ -64,7 +64,7 @@ def generate_questions(quantity):
     return questions
 
 
-def generate_flashcard():
+def generate_flashcard() -> FlashCard:
     """Generate flashcard"""
     word = get_word_from_database()
     return FlashCard(
@@ -74,7 +74,7 @@ def generate_flashcard():
     )
 
 
-def generate_flashcards(quantity):
+def generate_flashcards(quantity) -> list[FlashCard]:
     """Generate flashcards"""
     flashcards = []
     for _ in range(quantity):
@@ -82,7 +82,7 @@ def generate_flashcards(quantity):
     return flashcards
 
 
-def create_image(text):
+def create_image(text) -> None:
     """Create image"""
     width, height = 300, 300
     image = Image.new('RGB', (width, height), 'white')

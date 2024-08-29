@@ -15,7 +15,7 @@ from utilities.utils import generate_questions
 router = Router(name=__name__)
 
 
-def make_summary(answers: dict, questions: list):
+def make_summary(answers: dict, questions: list) -> str:
     """Creates a summary of correct and wrong answers"""
     correct = 0
     incorrect = 0
@@ -53,7 +53,7 @@ def make_summary(answers: dict, questions: list):
 async def enter_quiz(callback: types.CallbackQuery,
                      state: FSMContext,
                      step: int = 0
-                     ):
+                     ) -> None:
     """Starts the quiz"""
     questions = generate_questions(10)
     if not step:
@@ -87,7 +87,7 @@ async def enter_quiz(callback: types.CallbackQuery,
 @router.message(F.text != Button.CANCEL,
                 F.text != Button.EXIT)
 async def check_answer(message: types.Message,
-                       state: FSMContext):
+                       state: FSMContext) -> None:
     """Checks if the user's answer is correct"""
     data = await state.get_data()
     step = data['step']
@@ -117,7 +117,7 @@ async def check_answer(message: types.Message,
 
 @router.message(F.text == Button.EXIT)
 async def exit_game(message: types.Message,
-                    state: FSMContext):
+                    state: FSMContext) -> None:
     """Exits the quiz"""
     data = await state.get_data()
     answers = data.get('answers', {})
@@ -135,7 +135,7 @@ async def exit_game(message: types.Message,
 
 @router.message(F.text == Button.CANCEL)
 async def back_step(message: types.Message,
-                    state: FSMContext):
+                    state: FSMContext) -> None:
     """Returns to previous step"""
     data = await state.get_data()
     step = data.get('step')

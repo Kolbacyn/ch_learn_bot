@@ -12,7 +12,7 @@ from utilities.utils import create_image, generate_flashcards
 router = Router(name=__name__)
 
 
-def make_summary(crct_answers: int, wrg_answers: int):
+def make_summary(crct_answers: int, wrg_answers: int) -> str:
     """Creates a summary of correct and wrong answers"""
     return f'Верных ответов: {crct_answers}\nНеверных ответов: {wrg_answers}'
 
@@ -20,7 +20,7 @@ def make_summary(crct_answers: int, wrg_answers: int):
 @router.callback_query(F.data == ButtonData.TRAIN_FLASHCARDS)
 async def enter_flashcards(callback: types.CallbackQuery,
                            state: FSMContext,
-                           step: int = 0):
+                           step: int = 0) -> None:
     """Starts the flashcards interaction"""
     await state.clear()
     flashcards = generate_flashcards(10)
@@ -53,7 +53,7 @@ async def enter_flashcards(callback: types.CallbackQuery,
 
 @router.callback_query(F.data == ButtonData.FLASHCARD_FRONT_SIDE)
 async def show_back_side(callback: types.CallbackQuery,
-                         state: FSMContext):
+                         state: FSMContext) -> None:
     """Shows the back side of the flashcard"""
     data = await state.get_data()
     step = data.get('step')
@@ -64,7 +64,7 @@ async def show_back_side(callback: types.CallbackQuery,
 @router.callback_query(F.data.in_((ButtonData.FLASHCARD_CORRECT_ANSWER,
                                    ButtonData.FLASHCARD_WRONG_ANSWER)))
 async def process_answer(callback: types.CallbackQuery,
-                         state: FSMContext):
+                         state: FSMContext) -> None:
     """Processes the answer"""
     data = await state.get_data()
     step = data.get('step') + Numeric.ONE
@@ -97,7 +97,7 @@ async def process_answer(callback: types.CallbackQuery,
 
 @router.callback_query(F.data == ButtonData.FLASHCARD_LEAVE)
 async def leave(callback: types.CallbackQuery,
-                state: FSMContext):
+                state: FSMContext) -> None:
     """Abrupts the flashcards interaction"""
     data = await state.get_data()
     correct_answers = data.get('correct_answers', Numeric.ZERO)
