@@ -12,7 +12,7 @@ router = Router(name=__name__)
 
 @router.callback_query(F.data.startswith('hsk_buttons_'))
 async def hsk_level(callback: types.CallbackQuery,
-                    state: FSMContext):
+                    state: FSMContext) -> None:
     """Checks the HSK level"""
     await state.clear()
     data = await state.get_data()
@@ -30,7 +30,7 @@ async def hsk_level(callback: types.CallbackQuery,
 
 @router.callback_query(F.data.startswith('language_'))
 async def language(callback: types.CallbackQuery,
-                   state: FSMContext):
+                   state: FSMContext) -> None:
     """Checks the language"""
     data = await state.get_data()
     logging.info(data)

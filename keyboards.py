@@ -194,3 +194,61 @@ def build_flashcards_kb(step, flashcards):
         text=Button.EXIT,
         callback_data=ButtonData.FLASHCARD_LEAVE)])
     return InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+
+
+def build_sentence_kb(words: list, step: int):
+    """Adds buttons to the keyboard"""
+    inline_keyboard = []
+    words_buttons = []
+    for word in words:
+        words_buttons.append(InlineKeyboardButton(
+            callback_data=f'part_{word}',
+            text=word))
+    inline_keyboard.append(words_buttons)
+    service_buttons = [
+        InlineKeyboardButton(
+            text=Button.CANCEL,
+            callback_data=ButtonData.CONSTRUCT_BACK
+            ),
+        InlineKeyboardButton(
+            text=Button.EXIT,
+            callback_data=ButtonData.CONSTRUCT_LEAVE
+            )
+    ]
+    if step > Numeric.ZERO:
+        inline_keyboard.append(service_buttons)
+    else:
+        inline_keyboard.append([service_buttons[-1]])
+    return InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+
+
+def build_final_kb():
+    """Adds buttons to the keyboard at the final stage"""
+    inline_keyboard = []
+    inline_keyboard.append([
+        InlineKeyboardButton(
+            text=Button.CANCEL,
+            callback_data=ButtonData.CONSTRUCT_BACK
+            ),
+        InlineKeyboardButton(
+            text=Button.ACCEPT,
+            callback_data=ButtonData.CONSTRUCT_CORRECT
+            )
+        ])
+    return InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+
+
+def build_result_kb():
+    """Adds buttons to the keyboard at the final stage"""
+    inline_keyboard = []
+    inline_keyboard.append([
+        InlineKeyboardButton(
+            text=Button.EXIT,
+            callback_data=ButtonData.CONSTRUCT_LEAVE
+            ),
+        InlineKeyboardButton(
+            text=Button.REPEAT,
+            callback_data=ButtonData.CONSTRUCT_AGAIN
+            )
+        ])
+    return InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
