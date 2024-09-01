@@ -10,20 +10,24 @@ from utilities.utils import AttemptsCallback, AttemptsQuantity
 
 def build_main_menu_kb() -> InlineKeyboardMarkup:
     """Builds the main menu keyboard"""
-    builder = InlineKeyboardBuilder()
-    builder.button(
-        text='Квиз',
-        callback_data='main_menu_btn_1'
+    inline_keyboard = []
+    inline_keyboard.append(
+        [
+            InlineKeyboardButton(
+                text='Квиз',
+                callback_data='main_menu_btn_1'
+            ),
+            InlineKeyboardButton(
+                text='Карточки',
+                callback_data='main_menu_btn_2'
+            ),
+            InlineKeyboardButton(
+                text='Конструктор',
+                callback_data='main_menu_btn_3'
+            )
+        ]
     )
-    builder.button(
-        text='Карточки',
-        callback_data='main_menu_btn_2'
-    )
-    builder.button(
-        text='Конструктор',
-        callback_data='main_menu_btn_3'
-    )
-    return builder.as_markup()
+    return InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
 
 
 def build_hsk_kb() -> InlineKeyboardMarkup:

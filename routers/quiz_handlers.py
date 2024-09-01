@@ -46,7 +46,8 @@ def make_summary(answers: dict, questions: list) -> str:
                 as_key_value('Неправильно', incorrect),
             ),
         ),
-    )
+        '____________________________________________'
+        )
 
 
 @router.callback_query(F.data == ButtonData.TRAIN_QUIZ)
