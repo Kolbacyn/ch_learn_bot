@@ -7,6 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
 from scrapy_hsk.models import Base, Sentence, Word
+from utilities.constants import Picture
 from utilities.dataclass import Answer, FlashCard, Question
 
 engine = create_engine('sqlite:///sqlite.db', echo=False)
@@ -89,7 +90,7 @@ def create_image(text) -> None:
     draw = ImageDraw.Draw(image)
     font = ImageFont.truetype('Deng.ttf', size=62)
     draw.text((150, 150), anchor='mm', text=text, fill='black', font=font)
-    image.save('biffer.png', 'PNG')
+    image.save(Picture.FLASHCARD, 'PNG')
 
 
 class AttemptsQuantity(Enum):

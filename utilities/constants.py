@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import IntEnum, StrEnum
 
 
-class Button(str, Enum):
+class Button(StrEnum):
     """Buttons"""
     HSK_1_BUTTON = 'hsk_buttons_1'
     ACCEPT = '✅ Подтвердить'
@@ -13,7 +13,7 @@ class Button(str, Enum):
     WRONG = '❌'
 
 
-class ButtonData(str, Enum):
+class ButtonData(StrEnum):
     """Button data"""
     TRAIN_QUIZ = 'main_menu_btn_1'
     TRAIN_FLASHCARDS = 'main_menu_btn_2'
@@ -31,13 +31,13 @@ class ButtonData(str, Enum):
     FLASHCARD_LEAVE = 'flashcard_leave'
 
 
-class Picture(str, Enum):
+class Picture(StrEnum):
     """Pictures"""
-    GREETING = 'hey_pic.png'
-    FLASHCARD = 'biffer.png'
+    GREETING = 'pictures/hey_pic.png'
+    FLASHCARD = 'pictures/biffer.png'
 
 
-class CommonMessage(str, Enum):
+class CommonMessage(StrEnum):
     """Common messages:"""
     CANCEL = 'Тренировка отменена.'
     CHOOSE_HSK_LEVEL = 'Выбери уровень подготовки'
@@ -54,7 +54,7 @@ class CommonMessage(str, Enum):
     NIHAO = '你好'
 
 
-class ConstructMessage(str, Enum):
+class ConstructMessage(StrEnum):
     """Construct messages"""
     CORRECT = 'Все верно!'
     INCORRECT = 'Неверно!\nПравильное предложение: '
@@ -64,18 +64,18 @@ class ConstructMessage(str, Enum):
     RETURN_TO_MENU = 'Возвращаемся в главное меню...'
 
 
-class FlashcardMessage(str, Enum):
+class FlashcardMessage(StrEnum):
     """Flashcard messages"""
     INITIAL = 'Вот ваше первое слово: '
     START_FLASHCARDS = 'Приступим!'
 
 
-class QuizMessage(str, Enum):
+class QuizMessage(StrEnum):
     """Quiz messages"""
     INITIAL = 'Вот ваше первое слово: '
 
 
-class Rules(str, Enum):
+class Rules(StrEnum):
     """Rules"""
     CONSTRUCT_RULES = '''
         Правила:
@@ -110,7 +110,7 @@ class Rules(str, Enum):
         '''
 
 
-class Numeric(int, Enum):
+class Numeric(IntEnum):
     """Numbers"""
     ZERO = 0
     ONE = 1
