@@ -7,7 +7,7 @@ from aiogram.types import ReplyKeyboardRemove
 from aiogram.utils.formatting import (Bold, as_key_value, as_list,
                                       as_numbered_list, as_section)
 
-from keyboards import build_main_menu_kb, build_answers_kb
+from keyboards import build_answers_kb, build_main_menu_kb
 from utilities.constants import (Button, ButtonData, CommonMessage, Numeric,
                                  Rules)
 from utilities.utils import generate_questions
@@ -46,7 +46,7 @@ def make_summary(answers: dict, questions: list) -> str:
                 as_key_value('Неправильно', incorrect),
             ),
         ),
-        '____________________________________________'
+        # '____________________________________________'
         )
 
 
