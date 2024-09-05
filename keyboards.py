@@ -1,8 +1,7 @@
 from aiogram.types import (InlineKeyboardMarkup, KeyboardButton,
                            ReplyKeyboardMarkup)
 from aiogram.utils.keyboard import (InlineKeyboardBuilder,
-                                    InlineKeyboardButton,
-                                    ReplyKeyboardBuilder)
+                                    InlineKeyboardButton, ReplyKeyboardBuilder)
 
 from utilities.constants import Button, ButtonData, Numeric
 from utilities.utils import AttemptsCallback, AttemptsQuantity
