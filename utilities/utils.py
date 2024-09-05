@@ -94,6 +94,7 @@ def create_image(text) -> None:
 
 
 class AttemptsQuantity(Enum):
+    """Attempts quantity"""
     ten = '10'
     twenty = '20'
     fifty = '50'
@@ -101,4 +102,5 @@ class AttemptsQuantity(Enum):
 
 
 class AttemptsCallback(CallbackData, prefix='attempts'):
+    """Attempts callback"""
     quantity: AttemptsQuantity
