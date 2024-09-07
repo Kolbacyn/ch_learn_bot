@@ -12,6 +12,13 @@ class Button(StrEnum):
     CORRECT = '✅'
     WRONG = '❌'
 
+    RUSSIAN = 'Русский'
+    ENGLISH = 'English'
+
+    QUIZ = 'Викторина'
+    FLASHCARDS = 'Карточки'
+    CONSTRUCTOR = 'Конструктор'
+
 
 class ButtonData(StrEnum):
     """Button data"""
@@ -29,6 +36,9 @@ class ButtonData(StrEnum):
     FLASHCARD_CORRECT_ANSWER = 'flashcard_correct_answer'
     FLASHCARD_WRONG_ANSWER = 'flashcard_wrong_answer'
     FLASHCARD_LEAVE = 'flashcard_leave'
+
+    LANGUAGE_RU = 'language_ru'
+    LANGUAGE_EN = 'language_en'
 
 
 class Picture(StrEnum):
