@@ -13,16 +13,16 @@ def build_main_menu_kb() -> InlineKeyboardMarkup:
     inline_keyboard.append(
         [
             InlineKeyboardButton(
-                text='Квиз',
-                callback_data='main_menu_btn_1'
+                text=Button.QUIZ,
+                callback_data=ButtonData.TRAIN_QUIZ
             ),
             InlineKeyboardButton(
-                text='Карточки',
-                callback_data='main_menu_btn_2'
+                text=Button.FLASHCARDS,
+                callback_data=ButtonData.TRAIN_FLASHCARDS
             ),
             InlineKeyboardButton(
-                text='Конструктор',
-                callback_data='main_menu_btn_3'
+                text=Button.CONSTRUCTOR,
+                callback_data=ButtonData.TRAIN_CONSTRUCTOR
             )
         ]
     )
@@ -156,12 +156,12 @@ def build_language_kb() -> InlineKeyboardMarkup:
     """Builds the language keyboard"""
     builder = InlineKeyboardBuilder()
     builder.button(
-        text='Русский',
-        callback_data='language_ru'
+        text=Button.RUSSIAN,
+        callback_data=ButtonData.LANGUAGE_RU
     )
     builder.button(
-        text='English',
-        callback_data='language_en'
+        text=Button.ENGLISH,
+        callback_data=ButtonData.LANGUAGE_EN
     )
     return builder.as_markup()
 
