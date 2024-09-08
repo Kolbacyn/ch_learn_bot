@@ -46,7 +46,6 @@ def make_summary(answers: dict, questions: list) -> str:
                 as_key_value('Неправильно', incorrect),
             ),
         ),
-        # '____________________________________________'
         )
 
 

@@ -12,8 +12,9 @@ class Button(StrEnum):
     CORRECT = '✅'
     WRONG = '❌'
 
-    RUSSIAN = 'Русский'
-    ENGLISH = 'English'
+    RUSSIAN = '🇷🇺 Русский'
+    ENGLISH = '🇬🇧 English'
+    SPANISH = '🇪🇸 Espanol'
 
     QUIZ = 'Викторина'
     FLASHCARDS = 'Карточки'
