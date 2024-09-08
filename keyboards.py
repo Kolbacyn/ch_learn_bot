@@ -120,38 +120,6 @@ def build_attempts_kb2() -> ReplyKeyboardMarkup:
     )
 
 
-# attempts_quantity_buttons = ReplyKeyboardMarkup(
-#     keyboard=[
-#         [KeyboardButton(
-#             text='10 попыток',
-#             callback_data=AttemptsCallback(
-#                 quantity=AttemptsQuantity.ten
-#             ).pack()
-#         ),
-#          KeyboardButton(
-#             text='20 попыток',
-#             callback_data=AttemptsCallback(
-#                 quantity=AttemptsQuantity.twenty
-#             ).pack()
-#         ),
-#          KeyboardButton(
-#             text='50 попыток',
-#             callback_data=AttemptsCallback(
-#                 quantity=AttemptsQuantity.fifty
-#             ).pack()
-#         ),
-#          KeyboardButton(
-#             text='100 попыток',
-#             callback_data=AttemptsCallback(
-#                 quantity=AttemptsQuantity.hundred
-#             ).pack()
-#         )],
-#     ],
-#     resize_keyboard=True,
-#     one_time_keyboard=True
-# )
-
-
 def build_language_kb() -> InlineKeyboardMarkup:
     """Builds the language keyboard"""
     builder = InlineKeyboardBuilder()
@@ -221,7 +189,7 @@ def build_sentence_kb(words: list, step: int):
     if step > Numeric.ZERO:
         inline_keyboard.append(service_buttons)
     else:
-        inline_keyboard.append([service_buttons[-1]])
+        inline_keyboard.append([service_buttons[Numeric.LAST_ELEMENT]])
     return InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
 
 
