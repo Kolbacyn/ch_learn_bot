@@ -5,8 +5,9 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from scrapy_hsk.models import Base, Sentence
+from utilities.constants import Database
 
-engine = create_engine('sqlite:///sqlite_sentences.db', echo=False)
+engine = create_engine(Database.SQLITE, echo=False)
 Base.metadata.create_all(engine)
 session = Session(engine)
 

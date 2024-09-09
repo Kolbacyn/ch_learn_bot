@@ -31,3 +31,10 @@ class Sentence(Base):
     transcription = Column(String)
     translation = Column(String)
     level = Column(Integer)
+
+
+class User(Base):
+    """Model for user"""
+    user_id = Column(Integer)
+    language = Column(String)
+    level = Column(Integer)

@@ -40,6 +40,7 @@ class ButtonData(StrEnum):
 
     LANGUAGE_RU = 'language_ru'
     LANGUAGE_EN = 'language_en'
+    LANGUAGE_ES = 'language_es'
 
 
 class Picture(StrEnum):
@@ -128,3 +129,8 @@ class Numeric(IntEnum):
     LAST_ELEMENT = -1
     QUIZ_SLEEP = 5
     ADJUSTMENT = 2
+
+
+class Database(StrEnum):
+    """Database"""
+    SQLITE = 'sqlite:///sqlite.db'

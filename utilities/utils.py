@@ -1,3 +1,4 @@
+import logging
 from enum import Enum
 from random import choice, sample, shuffle
 
@@ -6,11 +7,11 @@ from PIL import Image, ImageDraw, ImageFont
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from scrapy_hsk.models import Base, Sentence, Word
-from utilities.constants import Picture
+from scrapy_hsk.models import Base, Sentence, Word, User
+from utilities.constants import Database, Picture
 from utilities.dataclass import Answer, FlashCard, Question
 
-engine = create_engine('sqlite:///sqlite.db', echo=False)
+engine = create_engine(Database.SQLITE, echo=False)
 Base.metadata.create_all(engine)
 session = Session(engine)
 
@@ -22,7 +23,7 @@ def get_word_from_database() -> Word:
 
 def get_sentence_from_database() -> Sentence:
     """Get sentence from database"""
-    sent_engine = create_engine('sqlite:///sqlite_sentences.db', echo=False)
+    sent_engine = create_engine(Database.SQLITE, echo=False)
     Base.metadata.create_all(sent_engine)
     sent_session = Session(sent_engine)
     return choice(sent_session.query(Sentence).all())
@@ -91,6 +92,38 @@ def create_image(text) -> None:
     font = ImageFont.truetype('Deng.ttf', size=62)
     draw.text((150, 150), anchor='mm', text=text, fill='black', font=font)
     image.save(Picture.FLASHCARD, 'PNG')
+
+
+def check_user_in_database(user_id) -> bool:
+    """Check user in database"""
+    existing_user = session.query(User).filter_by(user_id=user_id).first()
+    if existing_user:
+        return True
+    return False
+
+
+def add_user_to_database(user_id) -> None:
+    """Add user to database"""
+    existing_user = check_user_in_database(user_id)
+    if existing_user:
+        return
+    session.add(User(user_id=user_id))
+    session.commit()
+
+
+def update_user(user_id, new_language=None, new_level=None):
+    """Update user data"""
+    user = session.query(User).filter_by(user_id=user_id).first()
+
+    if user:
+        if new_language is not None:
+            user.language = new_language
+        if new_level is not None:
+            user.level = new_level
+        session.commit()
+        logging.info(f"Данные пользователя {user_id} обновлены.")
+    else:
+        logging.error(f"Пользователь с ID {user_id} не найден в базе данных.")
 
 
 class AttemptsQuantity(Enum):

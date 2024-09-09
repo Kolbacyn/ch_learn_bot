@@ -131,6 +131,10 @@ def build_language_kb() -> InlineKeyboardMarkup:
         text=Button.ENGLISH,
         callback_data=ButtonData.LANGUAGE_EN
     )
+    builder.button(
+        text=Button.SPANISH,
+        callback_data=ButtonData.LANGUAGE_ES
+    )
     return builder.as_markup()
 
 
