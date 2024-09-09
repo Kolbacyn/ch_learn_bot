@@ -7,6 +7,7 @@ from utilities.utils import update_user
 
 router = Router(name=__name__)
 
+
 @router.callback_query(F.data.startswith('hsk_buttons_'))
 async def hsk_level(callback: types.CallbackQuery,
                     state: FSMContext) -> None:
