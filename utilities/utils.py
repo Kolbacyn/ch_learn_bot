@@ -6,11 +6,11 @@ from PIL import Image, ImageDraw, ImageFont
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from scrapy_hsk.models import Base, Sentence, Word
-from utilities.constants import Picture
+from scrapy_hsk.models import Base, Sentence, Word, User
+from utilities.constants import Database, Picture
 from utilities.dataclass import Answer, FlashCard, Question
 
-engine = create_engine('sqlite:///sqlite.db', echo=False)
+engine = create_engine(Database.SQLITE, echo=False)
 Base.metadata.create_all(engine)
 session = Session(engine)
 
@@ -22,7 +22,7 @@ def get_word_from_database() -> Word:
 
 def get_sentence_from_database() -> Sentence:
     """Get sentence from database"""
-    sent_engine = create_engine('sqlite:///sqlite_sentences.db', echo=False)
+    sent_engine = create_engine(Database.SQLITE, echo=False)
     Base.metadata.create_all(sent_engine)
     sent_session = Session(sent_engine)
     return choice(sent_session.query(Sentence).all())
@@ -91,6 +91,12 @@ def create_image(text) -> None:
     font = ImageFont.truetype('Deng.ttf', size=62)
     draw.text((150, 150), anchor='mm', text=text, fill='black', font=font)
     image.save(Picture.FLASHCARD, 'PNG')
+
+
+def add_user_to_database(user_id) -> None:
+    """Add user to database"""
+    session.add(User(user_id=user_id))
+    session.commit()
 
 
 class AttemptsQuantity(Enum):

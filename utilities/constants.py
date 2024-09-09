@@ -128,3 +128,8 @@ class Numeric(IntEnum):
     LAST_ELEMENT = -1
     QUIZ_SLEEP = 5
     ADJUSTMENT = 2
+
+
+class Database(StrEnum):
+    """Database"""
+    SQLITE = 'sqlite:///sqlite.db'
