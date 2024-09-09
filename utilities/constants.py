@@ -40,6 +40,7 @@ class ButtonData(StrEnum):
 
     LANGUAGE_RU = 'language_ru'
     LANGUAGE_EN = 'language_en'
+    LANGUAGE_ES = 'language_es'
 
 
 class Picture(StrEnum):

@@ -1,3 +1,4 @@
+import logging
 from enum import Enum
 from random import choice, sample, shuffle
 
@@ -93,10 +94,36 @@ def create_image(text) -> None:
     image.save(Picture.FLASHCARD, 'PNG')
 
 
+def check_user_in_database(user_id) -> bool:
+    """Check user in database"""
+    existing_user = session.query(User).filter_by(user_id=user_id).first()
+    if existing_user:
+        return True
+    return False
+
+
 def add_user_to_database(user_id) -> None:
     """Add user to database"""
+    existing_user = check_user_in_database(user_id)
+    if existing_user:
+        return
     session.add(User(user_id=user_id))
     session.commit()
+
+
+def update_user(user_id, new_language=None, new_level=None):
+    """Update user data"""
+    user = session.query(User).filter_by(user_id=user_id).first()
+
+    if user:
+        if new_language is not None:
+            user.language = new_language
+        if new_level is not None:
+            user.level = new_level
+        session.commit()
+        logging.info(f"Данные пользователя {user_id} обновлены.")
+    else:
+        logging.error(f"Пользователь с ID {user_id} не найден в базе данных.")
 
 
 class AttemptsQuantity(Enum):
