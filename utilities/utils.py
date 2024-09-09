@@ -7,7 +7,7 @@ from PIL import Image, ImageDraw, ImageFont
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from scrapy_hsk.models import Base, Sentence, Word, User
+from scrapy_hsk.models import Base, Sentence, User, Word
 from utilities.constants import Database, Picture
 from utilities.dataclass import Answer, FlashCard, Question
 

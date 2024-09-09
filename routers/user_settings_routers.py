@@ -1,13 +1,12 @@
 from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
 
 from keyboards import build_language_kb, build_main_menu_kb
-from utilities.constants import CommonMessage, Database, Numeric
+from utilities.constants import CommonMessage, Numeric
 from utilities.utils import update_user
 
 router = Router(name=__name__)
+
 
 @router.callback_query(F.data.startswith('hsk_buttons_'))
 async def hsk_level(callback: types.CallbackQuery,
