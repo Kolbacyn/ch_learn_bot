@@ -10,7 +10,7 @@ from aiogram.utils.formatting import (Bold, as_key_value, as_list,
 from keyboards import build_answers_kb, build_main_menu_kb
 from utilities.constants import (Button, ButtonData, CommonMessage, Numeric,
                                  Rules)
-from utilities.utils import generate_questions
+from utilities.utils import generate_questions, get_user_level
 
 router = Router(name=__name__)
 
@@ -55,7 +55,8 @@ async def enter_quiz(callback: types.CallbackQuery,
                      step: int = 0
                      ) -> None:
     """Starts the quiz"""
-    questions = generate_questions(10)
+    level = get_user_level(callback.from_user.id)
+    questions = generate_questions(10, level)
     if not step:
         await callback.message.answer(CommonMessage.WELCOME)
 

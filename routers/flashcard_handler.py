@@ -7,7 +7,7 @@ from aiogram.fsm.context import FSMContext
 from keyboards import build_flashcards_kb, build_main_menu_kb
 from utilities.constants import (ButtonData, CommonMessage, FlashcardMessage,
                                  Numeric, Picture, Rules)
-from utilities.utils import create_image, generate_flashcards
+from utilities.utils import create_image, generate_flashcards, get_user_level
 
 router = Router(name=__name__)
 
@@ -23,7 +23,9 @@ async def enter_flashcards(callback: types.CallbackQuery,
                            step: int = 0) -> None:
     """Starts the flashcards interaction"""
     await state.clear()
-    flashcards = generate_flashcards(10)
+    level = get_user_level(callback.from_user.id)
+    flashcards = generate_flashcards(10, level)
+
     if not step:
         await callback.message.answer(CommonMessage.WELCOME)
     try:

@@ -16,9 +16,9 @@ Base.metadata.create_all(engine)
 session = Session(engine)
 
 
-def get_word_from_database() -> Word:
+def get_word_from_database(level: int) -> Word:
     """Get word from database"""
-    return choice(session.query(Word).all())
+    return choice(session.query(Word).filter_by(level=level).all())
 
 
 def get_sentence_from_database() -> Sentence:
@@ -41,14 +41,14 @@ def generate_sep_sentence() -> dict:
     return sentence_for_construct
 
 
-def generate_question() -> Question:
+def generate_question(level) -> Question:
     """
     Generate a question with a random word from the database and three options.
 
     Returns:
         Question: A question object with a prompt and four answer options.
     """
-    words = [get_word_from_database() for _ in range(4)]
+    words = [get_word_from_database(level) for _ in range(4)]
     prompt = f'Переведите на русский язык: {words[0].word}'
     correct_answer = Answer(words[0].rus_translation, is_correct=True)
     incorrect_answers = [
@@ -58,17 +58,17 @@ def generate_question() -> Question:
     return Question(text=prompt, answers=answer_options)
 
 
-def generate_questions(quantity) -> list[Question]:
+def generate_questions(quantity, level) -> list[Question]:
     """Generate questions"""
     questions = []
     for _ in range(quantity):
-        questions.append(generate_question())
+        questions.append(generate_question(level))
     return questions
 
 
-def generate_flashcard() -> FlashCard:
+def generate_flashcard(level) -> FlashCard:
     """Generate flashcard"""
-    word = get_word_from_database()
+    word = get_word_from_database(level)
     return FlashCard(
         front_side=word.word,
         back_side=word.rus_translation,
@@ -76,11 +76,11 @@ def generate_flashcard() -> FlashCard:
     )
 
 
-def generate_flashcards(quantity) -> list[FlashCard]:
+def generate_flashcards(quantity, level) -> list[FlashCard]:
     """Generate flashcards"""
     flashcards = []
     for _ in range(quantity):
-        flashcards.append(generate_flashcard())
+        flashcards.append(generate_flashcard(level))
     return flashcards
 
 
@@ -124,6 +124,12 @@ def update_user(user_id, new_language=None, new_level=None):
         logging.info(f"Данные пользователя {user_id} обновлены.")
     else:
         logging.error(f"Пользователь с ID {user_id} не найден в базе данных.")
+
+
+def get_user_level(user_id) -> int:
+    """Get user level"""
+    user = session.query(User).filter_by(user_id=user_id).first()
+    return user.level
 
 
 class AttemptsQuantity(Enum):
