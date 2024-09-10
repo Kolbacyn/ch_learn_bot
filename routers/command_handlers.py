@@ -4,7 +4,7 @@ from aiogram import Router, types
 from aiogram.filters.command import Command
 from aiogram.fsm.context import FSMContext
 
-from keyboards import build_hsk_kb, build_main_menu_kb, build_language_kb
+from keyboards import build_language_kb, build_main_menu_kb
 from utilities.constants import CommonMessage, Numeric, Picture
 from utilities.utils import add_user_to_database, check_user_in_database
 
