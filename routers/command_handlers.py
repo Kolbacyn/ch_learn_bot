@@ -64,3 +64,12 @@ async def cmd_cancel(message: types.Message,
         CommonMessage.STARTOVER,
         reply_markup=build_main_menu_kb()
         )
+
+
+@router.message(Command('profile'))
+async def cmd_profile(message: types.Message) -> None:
+    """Processing profile command"""
+    await message.delete()
+    await message.answer(
+        CommonMessage.PROFILE
+        )
