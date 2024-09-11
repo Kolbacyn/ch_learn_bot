@@ -4,12 +4,13 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from scrapy_hsk.models import Base, Word
+from utilities.constants import Database
 
 
 class WordToDBPipeline:
     """Pipeline adding words to the database"""
     def open_spider(self, spider):
-        engine = create_engine('sqlite:///sqlite.db', echo=False)
+        engine = create_engine(Database.SQLITE, echo=False)
         Base.metadata.create_all(engine)
         self.session = Session(engine)
 

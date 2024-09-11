@@ -3,40 +3,16 @@ import logging
 
 from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from keyboards import build_main_menu_kb
-from utilities.constants import (Button, ButtonData, CommonMessage,
-                                 FlashcardMessage, Numeric, Picture, Rules)
-from utilities.utils import create_image, generate_flashcard
+from keyboards import build_flashcards_kb, build_main_menu_kb
+from utilities.constants import (ButtonData, CommonMessage, Numeric, Picture,
+                                 Rules)
+from utilities.utils import create_image, generate_flashcards, get_user_level
 
 router = Router(name=__name__)
 
-FLASHCARDS = [generate_flashcard() for _ in range(5)]
 
-
-def build_flashcards_kb(step):
-    """Adds buttons to the keyboard"""
-    inline_keyboard = []
-    inline_keyboard.append([InlineKeyboardButton(
-        text=FLASHCARDS[step].front_side,
-        callback_data=ButtonData.FLASHCARD_FRONT_SIDE)])
-    inline_keyboard.append([
-        InlineKeyboardButton(
-            text=Button.CORRECT,
-            callback_data=ButtonData.FLASHCARD_CORRECT_ANSWER
-            ),
-        InlineKeyboardButton(
-            text=Button.WRONG,
-            callback_data=ButtonData.FLASHCARD_WRONG_ANSWER
-            )])
-    inline_keyboard.append([InlineKeyboardButton(
-        text=Button.EXIT,
-        callback_data=ButtonData.FLASHCARD_LEAVE)])
-    return InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
-
-
-def make_summary(crct_answers: int, wrg_answers: int):
+def make_summary(crct_answers: int, wrg_answers: int) -> str:
     """Creates a summary of correct and wrong answers"""
     return f'Верных ответов: {crct_answers}\nНеверных ответов: {wrg_answers}'
 
@@ -44,30 +20,34 @@ def make_summary(crct_answers: int, wrg_answers: int):
 @router.callback_query(F.data == ButtonData.TRAIN_FLASHCARDS)
 async def enter_flashcards(callback: types.CallbackQuery,
                            state: FSMContext,
-                           step: int = 0):
+                           step: int = 0) -> None:
     """Starts the flashcards interaction"""
     await state.clear()
+    level = get_user_level(callback.from_user.id)
+    flashcards = generate_flashcards(10, level)
+
     if not step:
         await callback.message.answer(CommonMessage.WELCOME)
     try:
-        FLASHCARDS[step]
+        flashcards[step]
     except IndexError:
         await callback.message.answer(CommonMessage.GAME_OVER)
         await state.clear()
         return
     await state.update_data(step=step)
-    logging.info(FLASHCARDS[step].front_side)
+    await state.update_data(flashcards=flashcards)
+    logging.info(flashcards[step].front_side)
     await callback.message.answer(
         text=Rules.FLASHCARDS_RULES
     )
-    await asyncio.sleep(1)
+    await asyncio.sleep(Numeric.QUIZ_SLEEP)
     await callback.message.answer(
-        FlashcardMessage.START_FLASHCARDS
+        CommonMessage.STARTING
     )
-    create_image(FLASHCARDS[step].front_side)
+    create_image(flashcards[step].front_side)
     await callback.message.answer_photo(
         photo=types.FSInputFile(Picture.FLASHCARD),
-        reply_markup=build_flashcards_kb(step)
+        reply_markup=build_flashcards_kb(step, flashcards)
     )
     await asyncio.sleep(0.5)
     await callback.answer()
@@ -75,28 +55,30 @@ async def enter_flashcards(callback: types.CallbackQuery,
 
 @router.callback_query(F.data == ButtonData.FLASHCARD_FRONT_SIDE)
 async def show_back_side(callback: types.CallbackQuery,
-                         state: FSMContext):
+                         state: FSMContext) -> None:
     """Shows the back side of the flashcard"""
     data = await state.get_data()
     step = data.get('step')
-    await callback.answer(text=FLASHCARDS[step].hint)
+    flashcards = data.get('flashcards')
+    await callback.answer(text=flashcards[step].hint)
 
 
 @router.callback_query(F.data.in_((ButtonData.FLASHCARD_CORRECT_ANSWER,
                                    ButtonData.FLASHCARD_WRONG_ANSWER)))
 async def process_answer(callback: types.CallbackQuery,
-                         state: FSMContext):
+                         state: FSMContext) -> None:
     """Processes the answer"""
     data = await state.get_data()
     step = data.get('step') + Numeric.ONE
+    flashcards = data.get('flashcards')
     try:
-        FLASHCARDS[step]
+        flashcards[step]
     except IndexError:
         await callback.answer()
         await callback.message.answer(CommonMessage.GAME_OVER)
         await state.clear()
         return
-    create_image(FLASHCARDS[step].front_side)
+    create_image(flashcards[step].front_side)
     if callback.data == 'correct_answer':
         correct_answers = data.get('correct_answers',
                                    Numeric.ZERO) + Numeric.ONE
@@ -109,7 +91,7 @@ async def process_answer(callback: types.CallbackQuery,
         types.InputMediaPhoto(
             media=types.FSInputFile(Picture.FLASHCARD)
             ),
-        reply_markup=build_flashcards_kb(step)
+        reply_markup=build_flashcards_kb(step, flashcards)
     )
     await state.update_data(step=step)
     await callback.answer()
@@ -117,7 +99,7 @@ async def process_answer(callback: types.CallbackQuery,
 
 @router.callback_query(F.data == ButtonData.FLASHCARD_LEAVE)
 async def leave(callback: types.CallbackQuery,
-                state: FSMContext):
+                state: FSMContext) -> None:
     """Abrupts the flashcards interaction"""
     data = await state.get_data()
     correct_answers = data.get('correct_answers', Numeric.ZERO)

@@ -1,49 +1,33 @@
-import logging
-
 from aiogram import F, Router, types
-from aiogram.fsm.context import FSMContext
 
-from keyboards import build_language_kb, build_main_menu_kb
-from routers.command_handlers import users
+from keyboards import build_hsk_kb, build_main_menu_kb
 from utilities.constants import CommonMessage, Numeric
+from utilities.utils import update_user
 
 router = Router(name=__name__)
 
 
 @router.callback_query(F.data.startswith('hsk_buttons_'))
-async def hsk_level(callback: types.CallbackQuery,
-                    state: FSMContext):
+async def hsk_level(callback: types.CallbackQuery) -> None:
     """Checks the HSK level"""
-    await state.clear()
-    data = await state.get_data()
-    if not users[callback.from_user.id]:
-        await callback.message.answer(
-            CommonMessage.CHOOSE_LANGUAGE,
-            reply_markup=build_language_kb()
+    user_id = callback.from_user.id
+    level = callback.data[Numeric.LAST_ELEMENT]
+    update_user(user_id, new_level=level)
+    await callback.message.edit_text(
+            CommonMessage.HSK_CHOSEN,
+            reply_markup=build_main_menu_kb()
         )
-        data['hsk_level'] = callback.data[Numeric.LAST_ELEMENT]
-    logging.info(users)
-    logging.info(data)
-    await state.update_data(data)
     await callback.answer()
 
 
 @router.callback_query(F.data.startswith('language_'))
-async def language(callback: types.CallbackQuery,
-                   state: FSMContext):
+async def language(callback: types.CallbackQuery) -> None:
     """Checks the language"""
-    data = await state.get_data()
-    logging.info(data)
-    if not users[callback.from_user.id]:
-        await callback.message.edit_text(
-            CommonMessage.STARTING,
-            reply_markup=build_main_menu_kb()
+    user_id = callback.from_user.id
+    language = callback.data[Numeric.LANGUAGE:]
+    update_user(user_id, new_language=language)
+    await callback.message.edit_text(
+            CommonMessage.LANGUAGE_CHOSEN,
+            reply_markup=build_hsk_kb()
         )
-        data['language'] = callback.data[-2:]
-    await state.update_data(data)
-    logging.info(users)
-    logging.info(data)
-    data = await state.get_data()
-    users[callback.from_user.id]['language'] = data['language']
-    users[callback.from_user.id]['hsk_level'] = data['hsk_level']
     await callback.answer()
