@@ -40,9 +40,9 @@ async def enter_flashcards(callback: types.CallbackQuery,
     await callback.message.answer(
         text=Rules.FLASHCARDS_RULES
     )
-    await asyncio.sleep(1)
+    await asyncio.sleep(Numeric.QUIZ_SLEEP)
     await callback.message.answer(
-        FlashcardMessage.START_FLASHCARDS
+        CommonMessage.STARTING
     )
     create_image(flashcards[step].front_side)
     await callback.message.answer_photo(
