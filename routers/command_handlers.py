@@ -6,7 +6,8 @@ from aiogram.fsm.context import FSMContext
 
 from keyboards import build_language_kb, build_main_menu_kb
 from utilities.constants import CommonMessage, Numeric, Picture
-from utilities.utils import add_user_to_database, check_user_in_database
+from utilities.utils import (add_user_to_database, check_user_in_database,
+                             get_user_language, get_user_level)
 
 router = Router(name=__name__)
 
@@ -70,6 +71,12 @@ async def cmd_cancel(message: types.Message,
 async def cmd_profile(message: types.Message) -> None:
     """Processing profile command"""
     await message.delete()
+    user_id = message.from_user.id
+    level = get_user_level(user_id)
+    language = get_user_language(user_id)
+
     await message.answer(
-        CommonMessage.PROFILE
+        f'Ваш ID: {user_id}\n'
+        f'Язык: {language}\n'
+        f'Уровень: {level}\n'
         )
