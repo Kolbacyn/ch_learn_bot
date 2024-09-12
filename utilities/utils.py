@@ -132,6 +132,12 @@ def get_user_level(user_id) -> int:
     return user.level
 
 
+def get_user_language(user_id) -> str:
+    """Get user language"""
+    user = session.query(User).filter_by(user_id=user_id).first()
+    return user.language
+
+
 class AttemptsQuantity(Enum):
     """Attempts quantity"""
     ten = '10'
