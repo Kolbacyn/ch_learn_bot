@@ -112,7 +112,7 @@ def add_user_to_database(user_id) -> None:
 
 
 def update_user(user_id, new_language=None, new_level=None):
-    """Update user data"""
+    """Update user data in database"""
     user = session.query(User).filter_by(user_id=user_id).first()
 
     if user:
@@ -127,13 +127,13 @@ def update_user(user_id, new_language=None, new_level=None):
 
 
 def get_user_level(user_id) -> int:
-    """Get user level"""
+    """Get user level from database"""
     user = session.query(User).filter_by(user_id=user_id).first()
     return user.level
 
 
 def get_user_language(user_id) -> str:
-    """Get user language"""
+    """Get user language from database"""
     user = session.query(User).filter_by(user_id=user_id).first()
     return user.language
 
