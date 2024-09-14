@@ -8,7 +8,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
 from scrapy_hsk.models import Base, Sentence, User, Word
-from utilities.constants import Database, Picture
+from utilities.constants import Database, Numeric, Picture
 from utilities.dataclass import Answer, FlashCard, Question
 
 engine = create_engine(Database.SQLITE, echo=False)
@@ -48,13 +48,15 @@ def generate_question(level) -> Question:
     Returns:
         Question: A question object with a prompt and four answer options.
     """
-    words = [get_word_from_database(level) for _ in range(4)]
-    prompt = f'Переведите на русский язык: {words[0].word}'
-    correct_answer = Answer(words[0].rus_translation, is_correct=True)
+    words = [get_word_from_database(level) for _ in range(Numeric.FOUR)]
+    prompt = f'Переведите на русский язык: {words[Numeric.ZERO].word}'
+    correct_answer = Answer(words[Numeric.ZERO].rus_translation,
+                            is_correct=True)
     incorrect_answers = [
-        Answer(word.rus_translation) for word in words[1:]
+        Answer(word.rus_translation) for word in words[Numeric.ONE:]
     ]
-    answer_options = sample(incorrect_answers + [correct_answer], k=4)
+    answer_options = sample(incorrect_answers + [correct_answer],
+                            k=Numeric.FOUR)
     return Question(text=prompt, answers=answer_options)
 
 
@@ -86,10 +88,10 @@ def generate_flashcards(quantity, level) -> list[FlashCard]:
 
 def create_image(text) -> None:
     """Create image"""
-    width, height = 300, 300
+    width, height = Numeric.WIDTH, Numeric.HEIGHT
     image = Image.new('RGB', (width, height), 'white')
     draw = ImageDraw.Draw(image)
-    font = ImageFont.truetype('Deng.ttf', size=62)
+    font = ImageFont.truetype('Deng.ttf', size=Numeric.FONT_SIZE)
     draw.text((150, 150), anchor='mm', text=text, fill='black', font=font)
     image.save(Picture.FLASHCARD, 'PNG')
 

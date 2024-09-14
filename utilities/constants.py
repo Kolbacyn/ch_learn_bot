@@ -140,10 +140,14 @@ class Numeric(IntEnum):
     ZERO = 0
     ONE = 1
     FIVE = 5
+    FOUR = 4
     LAST_ELEMENT = -1
     QUIZ_SLEEP = 5
     ADJUSTMENT = 2
     LANGUAGE = -2
+    WIDTH = 300
+    HEIGHT = 300
+    FONT_SIZE = 62
 
 
 class Database(StrEnum):
