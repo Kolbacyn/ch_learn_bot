@@ -56,7 +56,7 @@ def build_hsk_kb() -> InlineKeyboardMarkup:
         text='HSK6',
         callback_data='hsk_buttons_6'
     )
-    builder.adjust(1)
+    builder.adjust(Numeric.ONE)
     return builder.as_markup()
 
 
