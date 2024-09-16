@@ -139,6 +139,7 @@ class Numeric(IntEnum):
     """Numbers"""
     ZERO = 0
     ONE = 1
+    TWO = 2
     FIVE = 5
     FOUR = 4
     LAST_ELEMENT = -1

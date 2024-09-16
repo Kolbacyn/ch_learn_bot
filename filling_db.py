@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from scrapy_hsk.models import Base, Sentence
-from utilities.constants import Database
+from utilities.constants import Database, Numeric
 
 engine = create_engine(Database.SQLITE, echo=False)
 Base.metadata.create_all(engine)
@@ -18,10 +18,10 @@ def process_csv_file(file) -> None:
         reader = csv.reader(f)
         for row in reader:
             sentence = Sentence(
-                sentence=row[0],
-                transcription=row[1],
-                translation=row[2],
-                level=1
+                sentence=row[Numeric.ZERO],
+                transcription=row[Numeric.ONE],
+                translation=row[Numeric.TWO],
+                level=Numeric.TWO
             )
             session.add(sentence)
             try:
@@ -31,4 +31,4 @@ def process_csv_file(file) -> None:
         return
 
 
-process_csv_file('utilities/sentences/level_1.csv')
+process_csv_file('utilities/sentences/level_2.csv')
