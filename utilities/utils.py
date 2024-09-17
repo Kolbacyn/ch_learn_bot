@@ -23,10 +23,7 @@ def get_word_from_database(level: int) -> Word:
 
 def get_sentence_from_database() -> Sentence:
     """Get sentence from database"""
-    sent_engine = create_engine(Database.SQLITE, echo=False)
-    Base.metadata.create_all(sent_engine)
-    sent_session = Session(sent_engine)
-    return choice(sent_session.query(Sentence).all())
+    return choice(session.query(Sentence).all())
 
 
 def generate_sep_sentence() -> dict:
