@@ -38,3 +38,14 @@ Finally, run bot:
 ```bash
 python main.py
 ```
+
+
+## Filling database
+
+To fill database with sentences, run:
+
+```bash
+python filling_db.py
+```
+
+Bot contains pre-processed .csv files with sentences. Command `python filling_db.py` will fill database with sentences from these files.
