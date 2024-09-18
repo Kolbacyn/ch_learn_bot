@@ -86,11 +86,16 @@ def generate_flashcards(quantity, level) -> list[FlashCard]:
 def create_image(text) -> None:
     """Create image"""
     width, height = Numeric.WIDTH, Numeric.HEIGHT
-    image = Image.new('RGB', (width, height), 'white')
+    image = Image.new(Picture.PALLETE, (width, height), Picture.W_COLOR)
     draw = ImageDraw.Draw(image)
-    font = ImageFont.truetype('Deng.ttf', size=Numeric.FONT_SIZE)
-    draw.text((150, 150), anchor='mm', text=text, fill='black', font=font)
-    image.save(Picture.FLASHCARD, 'PNG')
+    font = ImageFont.truetype(Picture.FONT, size=Numeric.FONT_SIZE)
+    draw.text((150, 150),
+              anchor=Picture.ANCHOR,
+              text=text,
+              fill=Picture.B_COLOR,
+              font=font
+              )
+    image.save(Picture.FLASHCARD, Picture.FORMAT)
 
 
 def check_user_in_database(user_id) -> bool:
