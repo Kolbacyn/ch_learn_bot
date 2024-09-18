@@ -47,6 +47,12 @@ class Picture(StrEnum):
     """Pictures"""
     GREETING = 'pictures/hey_pic.png'
     FLASHCARD = 'pictures/biffer.png'
+    FORMAT = 'PNG'
+    FONT = 'Deng.ttf'
+    B_COLOR = 'black'
+    W_COLOR = 'white'
+    ANCHOR = 'mm'
+    PALLETE = 'RGB'
 
 
 class CommonMessage(StrEnum):
