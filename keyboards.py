@@ -32,30 +32,11 @@ def build_main_menu_kb() -> InlineKeyboardMarkup:
 def build_hsk_kb() -> InlineKeyboardMarkup:
     """Builds the HSK keyboard"""
     builder = InlineKeyboardBuilder()
-    builder.button(
-        text='HSK1',
-        callback_data='hsk_buttons_1'
-    )
-    builder.button(
-        text='HSK2',
-        callback_data='hsk_buttons_2'
-    )
-    builder.button(
-        text='HSK3',
-        callback_data='hsk_buttons_3'
-    )
-    builder.button(
-        text='HSK4',
-        callback_data='hsk_buttons_4'
-    )
-    builder.button(
-        text='HSK5',
-        callback_data='hsk_buttons_5'
-    )
-    builder.button(
-        text='HSK6',
-        callback_data='hsk_buttons_6'
-    )
+    for i in range(Numeric.ONE, Numeric.SEVEN):
+        builder.button(
+            text=f'HSK {i}',
+            callback_data=f'hsk_buttons_{i}'
+        )
     builder.adjust(Numeric.ONE)
     return builder.as_markup()
 

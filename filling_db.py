@@ -14,7 +14,7 @@ session = Session(engine)
 
 def process_csv_file(file, level) -> None:
     """Process csv file"""
-    with open(file, encoding='utf-8') as f:
+    with open(file, encoding=Database.ENCODING) as f:
         reader = csv.reader(f)
         for row in reader:
             sentence = Sentence(
