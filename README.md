@@ -49,3 +49,6 @@ python filling_db.py
 ```
 
 Bot contains pre-processed .csv files with sentences. Command `python filling_db.py` will fill database with sentences from these files.
+
+You can fill database with words using spiders.
+To run spider:
